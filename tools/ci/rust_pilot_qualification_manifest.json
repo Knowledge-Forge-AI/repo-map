@@ -914,6 +914,10 @@
         "sha256": "2de8fb82c2aabc47d49c69bbb6337f9dcf72017b894824c0f324ceaa59c358e1"
       },
       {
+        "path": "src/main/python/common_lore_index/graph/_capture_control.py",
+        "sha256": "29cdf52ec6efbcc0d68a3610b396aa508ebdd205547342730fad3d553c4fe84c"
+      },
+      {
         "path": "src/main/python/common_lore_index/graph/_discovery_classify.py",
         "sha256": "a13c9919b1ce9995a6eb8b16c57d30e9ff369183a043c081e0b7f86b851ae86c"
       },
@@ -927,7 +931,7 @@
       },
       {
         "path": "src/main/python/common_lore_index/graph/discovery.py",
-        "sha256": "c9e7bd885fe975e44190cc09ee3bbce1e3f40c26a25ec78912aec504fcb2017a"
+        "sha256": "d14b7aeb7e87a69dbf5c38c3d2ad519251110292fb919908d9e09e136a8b8b45"
       },
       {
         "path": "src/main/python/common_lore_index/graph/discovery_extractors.py",
@@ -1313,6 +1317,7 @@
       "src/main/python/common_lore_index/extractors/shell/zunit_helpers.py",
       "src/main/python/common_lore_index/extractors/shell/zunit_observations.py",
       "src/main/python/common_lore_index/graph/__init__.py",
+      "src/main/python/common_lore_index/graph/_capture_control.py",
       "src/main/python/common_lore_index/graph/_discovery_classify.py",
       "src/main/python/common_lore_index/graph/_discovery_selection.py",
       "src/main/python/common_lore_index/graph/_key_namespaces.py",

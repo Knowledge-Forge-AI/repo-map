@@ -6167,6 +6167,55 @@
       "source_commit": "e4ea2be928b3d1e858ba93d413a2b2a722542e2c",
       "source_manifest_sha256": "f75e07b56fd35be2af0cbd440518ef509b0db0e8d388207d28fc930fba0eb27f",
       "status_path": "tools/ci/cloe-resource-governance8-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.graph._capture_candidate",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/_capture_candidate.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.graph._capture_control",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/_capture_control.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.graph._capture_control_discovery",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/_capture_control_discovery.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.graph._capture_identity",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/_capture_identity.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "935a93401167c5758576dda56d3929e9fd10c05058a8ac2462c177cf861b2efd",
+      "new_selected_set_sha256": "87cb258c71da5ffa10c440acbba8841d1edbebd0d9d1da239dbf9177f1beae7d",
+      "old_ownership_manifest_sha256": "af2b342d886dbf50de752b254015a2d292421108053352de277d8a828aabf014",
+      "old_selected_set_sha256": "a30e5e6a0c1bfd67547279711981886bb0ecf038a78fcdc799f1ccf8bb4bc9c7",
+      "phase": "REPOMAP-CLOE-RESOURCE-GOVERNANCE9",
+      "reason": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "source_commit": "472fcfd3bc09a404abc0a1b3dba1628c50ce7bea",
+      "source_manifest_sha256": "af2b342d886dbf50de752b254015a2d292421108053352de277d8a828aabf014",
+      "status_path": "tools/ci/cloe-resource-governance9-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

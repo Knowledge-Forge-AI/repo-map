@@ -16871,6 +16871,30 @@
       ],
       "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
       "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzzzzzzzz.cloe_resource_governance9.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/capture_cancellation.int.test.py",
+        "src/test/unit/python/repomap_kg/graph/capture_cancellation_phases.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/capture_cancellation_streaming.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/capture_control.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/capture_control_discovery.unit.test.py"
+      ],
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzzzzzzzzz.cloe_resource_governance9.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/capture_cancellation_fixtures.py"
+      ],
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_support"
     }
   ],
   "decompositions": [
@@ -61418,6 +61442,96 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/materialization_streaming.unit.test.py",
       "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_capture_candidate.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_capture_control.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_capture_control_discovery.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_capture_identity.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/capture_cancellation.int.test.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/capture_cancellation_fixtures.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/capture_cancellation_phases.unit.test.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/capture_cancellation_streaming.unit.test.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/capture_control.unit.test.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/capture_control_discovery.unit.test.py",
+      "rationale": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     }

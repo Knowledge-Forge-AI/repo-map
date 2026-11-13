@@ -1,6 +1,7 @@
 """Actual worker output agrees with the ordinary sealed-input reference."""
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
 from pathlib import Path
 import shutil
@@ -71,9 +72,10 @@ def test_worker_bundle_matches_non_elided_reference_and_owns_cleanup(
         hashes.append(path)
         return original_hash(path)
 
-    def counted_stable(path: Path, *, stage_path: Path | None = None) -> tuple[str, int, bool]:
+    def counted_stable(path: Path, *, stage_path: Path | None = None,
+                       cancel_check: Callable[[], None] | None = None) -> tuple[str, int, bool]:
         stable.append(path)
-        return original_stable(path, stage_path=stage_path)
+        return original_stable(path, stage_path=stage_path, cancel_check=cancel_check)
 
     with monkeypatch.context() as patch:
         patch.setattr(_discovery_classify, "content_hash", counted_hash)

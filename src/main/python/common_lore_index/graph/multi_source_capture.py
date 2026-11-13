@@ -17,6 +17,8 @@ from common_lore_index.graph._capture_contracts import (
     MultiSourceCaptureError, _SourceCapture, _SourceChanged, _SourceInvalid,
     _SourceUnavailable, _file_signature,
 )
+from common_lore_index.graph._capture_control import CancelCheck, CaptureControl, validate_capture_cancel
+from common_lore_index.graph._capture_control_discovery import discover_inventory
 from common_lore_index.graph.discovery import discover_repository
 from common_lore_index.graph.discovery_records import FileInfo
 from common_lore_index.graph.multi_source import (
@@ -61,6 +63,7 @@ def _read_stable_file(
     path: Path,
     *,
     stage_path: Path | None = None,
+    cancel_check: CancelCheck | None = None,
 ) -> tuple[str, int, bool]:
     """Read one regular file while binding content, size, and executable mode.
 
@@ -69,7 +72,9 @@ def _read_stable_file(
     descriptor when full semantic capture requests one.
     """
 
+    control = CaptureControl(cancel_check)
     for _attempt in range(3):
+        control.check()
         descriptor: int | None = None
         try:
             before = path.lstat()
@@ -93,7 +98,9 @@ def _read_stable_file(
                 with os.fdopen(descriptor, "rb", closefd=True) as source:
                     descriptor = None
                     while True:
+                        control.check()
                         chunk = source.read(1024 * 1024)
+                        control.check()
                         if not chunk:
                             break
                         digest.update(chunk)
@@ -133,12 +140,16 @@ def _capture_files(
     *,
     stage_root: Path | None = None,
     io_meter: SealingMeter | None = None,
+    cancel_check: CancelCheck | None = None,
 ) -> tuple[tuple[FileInfo, ...], tuple[tuple[str, int], ...]]:
+    validate_capture_cancel(cancel_check, io_meter)
     if io_meter is not None and stage_root is not None:
         raise ValueError("metered capture never stages semantic copies")
+    control = CaptureControl(cancel_check)
     files: list[FileInfo] = []
     sizes: list[tuple[str, int]] = []
     for item in discovered:
+        control.check()
         relative = Path(item.path)
         if relative.is_absolute() or ".." in relative.parts:
             raise _SourceInvalid
@@ -151,6 +162,7 @@ def _capture_files(
             digest, size, executable = _read_stable_file(
                 root / item.path,
                 stage_path=stage_path,
+                **control.keywords,
             )
         files.append(replace(item, content_hash=digest, executable=executable))
         sizes.append((item.path, size))
@@ -175,8 +187,11 @@ def _capture_inventory(
     stage_root: Path | None = None,
     discover_fn: Callable[..., Sequence[FileInfo]] | None = None,
     io_meter: SealingMeter | None = None,
+    cancel_check: CancelCheck | None = None,
     elide_discovery_hash: bool = False,
 ) -> tuple[_CapturedSource, ...]:
+    validate_capture_cancel(cancel_check, io_meter)
+    control = CaptureControl(cancel_check)
     if type(elide_discovery_hash) is not bool:
         raise ValueError("capture hash elision must be boolean")
     if elide_discovery_hash and io_meter is not None:
@@ -205,6 +220,7 @@ def _capture_inventory(
     # The caller binds the meter to discovery hooks so graph.discovery stays
     # free of artifacts imports (D12 Rust-qualification closure).
     metered: dict[str, Any] = {} if io_meter is None else {"io_meter": io_meter}
+    metered.update(control.keywords)
     discover_metered: dict[str, Any] = {}
     if io_meter is not None:
         from common_lore_index.graph._metered_discovery import MeteredDiscoveryHooks
@@ -216,13 +232,12 @@ def _capture_inventory(
         discover_metered["io_hooks"] = CaptureDiscoveryHooks()
     captured: list[_CapturedSource] = []
     for binding in sorted(bindings, key=lambda item: item.binding_id):
+        control.check()
         root = Path(binding.root_path_expanded)
         try:
             if not root.is_dir():
                 raise _SourceUnavailable
-            discovered = tuple(
-                discover_fn(root, exclude_paths=binding.exclude_paths, **discover_metered)
-            )
+            discovered = discover_inventory(discover_fn, root, binding.exclude_paths, discover_metered, control)
             binding_stage_root = (
                 stage_root / binding.alias if stage_root is not None else None
             )

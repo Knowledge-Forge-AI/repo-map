@@ -58,6 +58,7 @@ from common_lore_index.graph.discovery_extractors import (
     markdown_anchor_index,
     markdown_anchors_for_content as markdown_anchors_for_content,
 )
+from common_lore_index.graph._capture_control import CancelCheck, check_function
 from common_lore_index.graph.discovery_records import FileInfo
 from common_lore_index.graph.discovery_file_metadata import (
     content_hash as content_hash,
@@ -151,17 +152,22 @@ def extract_observations_from_repository_files(
     *,
     nix_flake_ref: str | None = None,
     include_nix_input_references: bool = False,
+    cancel_check: CancelCheck | None = None,
 ) -> list[RawObservation]:
     """Extract observations from one already discovered static file inventory."""
 
+    check = check_function(cancel_check)
+    check()
     module_index = PythonModuleIndex.from_python_paths(
         (file_info.path for file_info in file_infos if file_info.language == "python"),
         repository_root=repository_root,
     )
     repository_paths = frozenset(file_info.path for file_info in file_infos)
+    check()
     markdown_anchors = markdown_anchor_index(repository_root, file_infos)
     observations = []
     for file_info in file_infos:
+        check()
         observations.append(file_info.to_observation())
         if file_info.language in ("go", "go-module", "go-workspace"):
             observations.extend(
@@ -325,6 +331,9 @@ def extract_observations_from_repository_files(
                     repository_paths=repository_paths,
                 )
             )
+    check()
     observations.extend(extract_go_repository_observations(repository_root, file_infos))
+    check()
     observations.extend(extract_css_selector_match_observations(observations))
+    check()
     return observations

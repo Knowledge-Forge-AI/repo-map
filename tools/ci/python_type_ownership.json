@@ -1507,6 +1507,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._capture_candidate",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "CI132 acyclic capture repair: shared existing failures and pure signature helper move to a clean leaf owner; no added debt, threshold or import-containment relaxation.",
       "match": "exact",
       "module_prefix": "common_lore_index.graph._capture_contracts",
@@ -1516,9 +1525,36 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._capture_control",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._capture_control_discovery",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
       "match": "exact",
       "module_prefix": "common_lore_index.graph._capture_discovery",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0192 cooperative source capture, controlled iterator custody and real adapter/publication proof; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._capture_identity",
       "ownership_class": "python_retained"
     },
     {

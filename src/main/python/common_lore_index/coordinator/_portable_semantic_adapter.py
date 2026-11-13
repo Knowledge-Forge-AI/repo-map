@@ -128,6 +128,7 @@ def execute_portable_extraction(
                     manifest.graph_id,
                     _sealed_bindings(manifest, materialized.binding_roots),
                     expected_snapshot_vector=manifest.snapshot_vector,
+                    cancel_check=lambda: _cancelled(cancel_event),
                 )
             except MultiSourceCaptureError as error:
                 raise PortableExecutionError(error.category) from error

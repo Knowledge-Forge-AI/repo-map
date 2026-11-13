@@ -1679,3 +1679,44 @@ staged-copy elision, broad parser preemption, native-policy extension, dependenc
 new public protocol, study or complete local suite is selected by this follow-up.
 Independent design and parent adoption precede source. New dispatches continue
 dynamic_default; existing spent publication slots are never reused.
+
+
+### W7 capture-loop cancellation design
+
+ADR0192 adopts the independently reviewed third connected epic: cooperative
+stable capture/extraction checks with default seams and both source fences
+preserved. Public-boundary carrier custody, exact lazy iterator ownership and
+legacy cleanup limits are explicit. Source, scoped proof and resulting-source
+review precede one fresh milestone campaign. No new native/dependency class,
+study, complete local Python suite or coverage is selected.
+
+
+### W7 cooperative capture implementation and scoped proof
+
+Governance9 implements ADR0192 with 259 scoped unit and 42 containerized
+integration cases, preserved default bundles and exact source/iterator custody.
+Independent resulting-source review remains pending. Historical source-fault
+precedence is preserved even with an event already set; actual native terminal
+precedence remains separate. The three connected epics now freeze for one fresh
+milestone campaign after source acceptance and binding proof. No complete local
+Python suite or coverage measurement is selected.
+
+
+### W7 capture corrective proof
+
+Governance9 now proves 269 scoped unit and 46 containerized integration cases,
+including reviewed iterator acquisition/handled-caller cleanup corrections, all
+four late facade lookups and the adapted existing worker observer. Fresh changed-owner receipt
+projections and parent verification of complete raw Python pin maps bind the
+corrected source and unchanged selected owners. The initial
+independent source review is retained with its primary-read process limit; a
+bounded corrective review precedes commitment and the connected milestone.
+
+
+### W7 cooperative capture source accepted
+
+Governance9 is parent-accepted after the original independent source review,
+fresh corrective review and exact 269 unit/46 integration proof. Executable and
+quality pins remain unchanged after advisory wording/evidence clarification.
+The three connected epics now proceed to one fresh exact staging campaign;
+complete hosted coverage/native qualification and full roadmap gates stay open.
