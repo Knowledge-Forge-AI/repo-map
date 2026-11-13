@@ -931,6 +931,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0190 prepared-row admission and cooperative cancellation; three additive clean retained owners, no inherited profile or debt change.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._portable_preparation_control",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._portable_sealed_bindings",
@@ -4081,6 +4090,15 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0190 prepared-row admission and cooperative cancellation; three additive clean retained owners, no inherited profile or debt change.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage._preparation_iterators",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage._psql_stream",
@@ -4183,6 +4201,15 @@
       "justification": "Maintain repomap_kg.storage._staged_row_adapters under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage._staged_row_adapters",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0190 prepared-row admission and cooperative cancellation; three additive clean retained owners, no inherited profile or debt change.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage._staged_spool_preparation",
       "ownership_class": "python_retained"
     },
     {

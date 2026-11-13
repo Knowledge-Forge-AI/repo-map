@@ -16832,6 +16832,18 @@
       ],
       "rationale": "ADR0187 metered descriptor, primary-failure and incumbent-state witnesses; additive clean owners only, inherited profiles and debt unchanged.",
       "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzzzzzzz.cloe_resource_governance7.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/preparation_publication.int.test.py",
+        "src/test/unit/python/repomap_kg/storage/preparation_iterator_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/preparation_work.unit.test.py"
+      ],
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "test_owners"
     }
   ],
   "decompositions": [
@@ -61226,6 +61238,60 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/artifacts/metered_store_custody.unit.test.py",
       "rationale": "ADR0187 metered descriptor, primary-failure and incumbent-state witnesses; additive clean owners only, inherited profiles and debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_portable_preparation_control.py",
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/_preparation_iterators.py",
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/_staged_spool_preparation.py",
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/preparation_publication.int.test.py",
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/preparation_iterator_custody.unit.test.py",
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/preparation_work.unit.test.py",
+      "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     }

@@ -1589,3 +1589,48 @@ forward corrections and scoped proof. Production worker/deadline policy and
 all source-identity/debt/coverage guards are preserved. Native execution and
 desired87/82 coverage cushions remain pending one newly bound CI142 campaign;
 this does not complete W5/W6/W7/W8 or grant release/image acceptance.
+
+### CI142 qualification and prepared-row governance continuation
+
+[CI142 attempt1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/43357201893)
+qualifies staging7dc469d70bc09f46f8891f1a542f60e76d16a5d0 over main
+5ad00d162ad8a04430874275246a53227578c533. All nine jobs, retained same-attempt
+smoke/M/A/system/native contracts and three first-use/five installed bundle host
+checks pass. Unit18,997 and measured integration2,516 cases pass, plus five
+abrupt cases. Unit branches21,937/25,220 and integration20,183/25,220 meet hard
+floors; desired87/82 cushions remain5/498 arcs short. Consumed totals are51
+application starts,21 actual Rust component invocations,22 conservatively
+charged qualifier entries and46 wheel transfers. CI141's refused wrapper is
+charged separately from its zero runtime counters. No old slot is reusable.
+
+Current operator continuation selects REPOMAP-CLOE-RESOURCE-GOVERNANCE7 under
+[ADR0190](../adr/2026/11/0190-prepared-row-spool-admission-and-cancellation.md):
+shared admission while prepared spools grow, derived from existing limits,
+and cooperative cancellation through actual preparation with owned iterator
+cleanup. An independently reviewed design and explicit parent dispositions
+precede source. Existing checksum validation supports its owned static-data
+domain; broad hostile-object or whole-worker quota claims are excluded.
+Source and exact scoped proof now pass: 151 unit and 22 containerized
+integration cases, with strict unchanged-debt quality checks. Independently
+audited resulting-source review and parent wording corrections accept this
+bounded source; hosted qualification remains pending. This below-target slice stays
+local in a larger useful batch; no new public campaign, dependency, image,
+runner/native/model class or complete local suite is selected. Full roadmap,
+scientific, image/platform and release acceptance remain separate.
+
+
+### Governance7 bounded source acceptance
+
+ADR0190's prepared-spool admission, actual preparation cancellation and owned
+iterator custody pass 151 scoped unit and 22 containerized integration cases.
+One independently audited 27-copy checkpoint found no code defect. Parent
+wording corrections distinguish buffered file-size observations from the
+observer-before-write source guarantee and remove stale proof-pending language.
+All executable and quality metadata bytes remain unchanged after review.
+
+The phase-specific claude_only recovery is closed; its unused conditional
+checkpoint is not carried forward. New phases return to dynamic_default.
+This accepted local checkpoint joins the next connected W7 milestone; current
+operator authority requests eventual public staging/CI, which still needs a
+fresh exact campaign binding. No old spent slot, study or complete local suite
+is rearmed. Full roadmap, image/platform and release acceptance remain open.

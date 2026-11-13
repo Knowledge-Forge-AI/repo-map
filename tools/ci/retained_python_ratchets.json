@@ -769,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "2a9b1c747fc7caee7ece39b3b684df7e8e6bd0c80b9bd7bd76f2b690d27505c2"
+    "sha256": "f75e07b56fd35be2af0cbd440518ef509b0db0e8d388207d28fc930fba0eb27f"
   },
   "ruff": {
     "findings": [
@@ -15039,6 +15039,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.coordinator._portable_preparation_control",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_portable_preparation_control.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.coordinator._portable_sealed_bindings",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_portable_sealed_bindings.py",
@@ -18183,6 +18189,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.storage._preparation_iterators",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/_preparation_iterators.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.storage._psql_stream",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/_psql_stream.py",
@@ -18252,6 +18264,12 @@
         "module": "common_lore_index.storage._staged_row_adapters",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/_staged_row_adapters.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.storage._staged_spool_preparation",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/_staged_spool_preparation.py",
         "tier": "T1-future"
       },
       {

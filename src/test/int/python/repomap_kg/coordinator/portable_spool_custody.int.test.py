@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import replace
 from pathlib import Path
 import tempfile
 import threading
@@ -19,10 +20,111 @@ from common_lore_index.coordinator import _portable_semantic_adapter as adapter
 from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
 from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
 from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage import staged_rows as preparation_module
 from common_lore_index.storage.row_spool import RowSpool
 from repomap_test_support.portable_publication_fixtures import create_single_source_graph_config
 from repomap_test_support.portable_worker_equivalence import reference_bytes, publication_expectation
 from repomap_test_support.bundle_sort_fixtures import SortIOWitness, observe_sort_directory_cleanup
+
+
+@pytest.mark.parametrize("limit", ["bytes", "records"])
+def test_preparation_admits_before_writing_beyond_existing_bundle_limits(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, limit: str,
+) -> None:
+    _, store, _, _, capability, sentinel = _setup(tmp_path, functions=4201)
+    byte_limit = 8192 if limit == "bytes" else capability.max_bundle_bytes
+    capability = replace(capability, max_bundle_bytes=byte_limit)
+    if limit == "records":
+        monkeypatch.setattr(encoder_module, "MAX_BUNDLE_RECORDS", 2)
+    before = {path.name: path.read_bytes() for path in store._objects.iterdir()}
+    admitted: list[int] = []
+    written: list[int] = []
+    original = RowSpool.from_rows
+
+    def spool(cls, rows, **kwargs):
+        observer = kwargs.get("artifact_observer")
+
+        def observe(projected_bytes):
+            if observer is not None:
+                observer(projected_bytes)
+            admitted.append(projected_bytes)
+            written.extend(
+                path.stat().st_size
+                for path in capability.workspace_root.rglob("repomap-stage-rows-*.jsonl")
+            )
+
+        return original(rows, **dict(kwargs, artifact_observer=observe))
+
+    monkeypatch.setattr(RowSpool, "from_rows", classmethod(spool))
+    with pytest.raises(adapter.PortableExecutionError) as caught:
+        adapter.execute_portable_extraction(
+            capability, emit_progress=lambda *_: None, cancel_event=threading.Event(),
+        )
+    assert caught.value.category == "contract_validation"
+    assert admitted and written
+    if limit == "bytes":
+        assert max(written) <= byte_limit
+        assert max(admitted) <= byte_limit
+    else:
+        assert len(admitted) == 2
+    assert {path.name: path.read_bytes() for path in store._objects.iterdir()} == before
+    assert not tuple(store._temporary.iterdir())
+    assert tuple(capability.workspace_root.iterdir()) == (sentinel,)
+    assert sentinel.read_bytes() == b"preserved"
+
+
+def _observe_preparation(
+    monkeypatch: pytest.MonkeyPatch, event: threading.Event, boundary: str,
+) -> tuple[list[str], list[int]]:
+    consumed: list[str] = []
+    growth: list[int] = []
+    original_indexed = preparation_module._indexed
+    original_spool = RowSpool.from_rows
+
+    def indexed(descriptor, stage_id, rows, row_adapter):
+        for row in original_indexed(descriptor, stage_id, rows, row_adapter):
+            if descriptor.family == "raw_observations":
+                consumed.append(descriptor.family)
+                if boundary != "buffered-replay" and len(consumed) == 2:
+                    event.set()
+                    if boundary == "data-error-with-cancel":
+                        raise ValueError("cancelled")
+            yield row
+
+    def spool(cls, rows, **kwargs):
+        observer = kwargs.get("artifact_observer")
+
+        def observe(size):
+            if observer is not None:
+                observer(size)
+            growth.append(size)
+            if boundary == "buffered-replay":
+                event.set()
+
+        return original_spool(rows, **dict(kwargs, artifact_observer=observe))
+
+    monkeypatch.setattr(preparation_module, "_indexed", indexed)
+    monkeypatch.setattr(RowSpool, "from_rows", classmethod(spool))
+    return consumed, growth
+
+
+@pytest.mark.parametrize("boundary", ["acquisition", "buffered-replay", "data-error-with-cancel"])
+def test_preparation_cancellation_and_data_faults_stop_real_owned_work(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, boundary: str,
+) -> None:
+    _, store, _, _, capability, sentinel = _setup(tmp_path, functions=4201)
+    before = {path.name: path.read_bytes() for path in store._objects.iterdir()}
+    event = threading.Event()
+    consumed, growth = _observe_preparation(monkeypatch, event, boundary)
+    with pytest.raises(adapter.PortableExecutionError) as caught:
+        adapter.execute_portable_extraction(capability, emit_progress=lambda *_: None, cancel_event=event)
+    assert caught.value.category == ("contract_validation" if boundary == "data-error-with-cancel" else "cancelled")
+    assert len(consumed) == (4097 if boundary == "buffered-replay" else 2)
+    assert len(growth) == (1 if boundary == "buffered-replay" else 0)
+    assert {path.name: path.read_bytes() for path in store._objects.iterdir()} == before
+    assert not tuple(store._temporary.iterdir())
+    assert tuple(capability.workspace_root.iterdir()) == (sentinel,)
+    assert sentinel.read_bytes() == b"preserved"
 
 
 def _setup(tmp_path: Path, *, functions: int = 1):

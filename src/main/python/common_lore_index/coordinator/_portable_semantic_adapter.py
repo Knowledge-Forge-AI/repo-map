@@ -10,6 +10,7 @@ from typing import Callable
 
 from common_lore_index.artifacts._bundle_stream_encode import StreamingBundleDescriptor, StreamingBundleEncoder
 from common_lore_index.artifacts._canonical import CanonicalEncodingError
+from common_lore_index.artifacts import _bundle_stream_encode as _bundle_encoder
 from common_lore_index.artifacts.bundle import PublicationBundle
 from common_lore_index.artifacts.manifest import PortableSnapshotManifest
 from common_lore_index.artifacts.receipt import ExtractionReceipt
@@ -21,6 +22,7 @@ from common_lore_index.artifacts.store import (
     FileSystemArtifactStore,
 )
 from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
+from common_lore_index.coordinator._portable_preparation_control import _PreparedRowAdmission
 from common_lore_index.coordinator._portable_materialization import MaterializedWorkspace
 from common_lore_index.coordinator._portable_sealed_bindings import sealed_bindings as _project_sealed_bindings
 from common_lore_index.artifacts._bundle_cancellation import BundleEncodingCancelled, closing_bundle_resource
@@ -149,6 +151,10 @@ def execute_portable_extraction(
                     semantic.observations,
                     repository_name=manifest.bindings[0].repository_scope or "",
                     stage_id="stage-unassigned", spool_dir=materialized.attempt_root,
+                    spool_artifact_observer=_PreparedRowAdmission(
+                        capability.max_bundle_bytes, _bundle_encoder.MAX_BUNDLE_RECORDS,
+                    ),
+                    cancel_check=lambda: _cancelled(cancel_event),
                 )
             except PortableExecutionError:
                 raise

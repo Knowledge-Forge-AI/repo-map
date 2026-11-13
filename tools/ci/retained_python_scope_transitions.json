@@ -6096,6 +6096,46 @@
       "source_commit": "5b8a9c0314c4c0dee14d941c8319fc7aa492efd6",
       "source_manifest_sha256": "040239c1e87f2ae17af7450d361d734831a0078327a0bd70e06acf1e084cd70c",
       "status_path": "tools/ci/cloe-resource-governance5-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.coordinator._portable_preparation_control",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/coordinator/_portable_preparation_control.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage._preparation_iterators",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/_preparation_iterators.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage._staged_spool_preparation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/_staged_spool_preparation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "f75e07b56fd35be2af0cbd440518ef509b0db0e8d388207d28fc930fba0eb27f",
+      "new_selected_set_sha256": "898d559b9b0a722ed2186f187b435693044926c65be0fb257cbf8724d8429fe2",
+      "old_ownership_manifest_sha256": "2a9b1c747fc7caee7ece39b3b684df7e8e6bd0c80b9bd7bd76f2b690d27505c2",
+      "old_selected_set_sha256": "1fde0449a7d4ceb745b05bb19574739180c30e04052191c8abba8c55a6d195fe",
+      "phase": "REPOMAP-CLOE-RESOURCE-GOVERNANCE7",
+      "reason": "ADR0190 prepared-row admission and cooperative cancellation; three additive clean retained owners, no inherited profile or debt change.",
+      "source_commit": "7dc469d70bc09f46f8891f1a542f60e76d16a5d0",
+      "source_manifest_sha256": "2a9b1c747fc7caee7ece39b3b684df7e8e6bd0c80b9bd7bd76f2b690d27505c2",
+      "status_path": "tools/ci/cloe-resource-governance7-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"
