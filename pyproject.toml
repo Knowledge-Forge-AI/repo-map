@@ -29,7 +29,7 @@ static-analysis = [
   "ruff==0.16.2",
   "types-docker==7.2.0.20260819",
   "types-psutil==7.2.2.20260518",
-  "types-requests==2.33.0.20260518",
+  "types-requests==2.33.0.20261030",
 ]
 postgres = [
   "psycopg[c]==3.3.6",
