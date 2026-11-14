@@ -17,7 +17,7 @@ def test_real_cli_keeps_identity_shape_and_reports_the_repository_license() -> N
                                         "package": "common_lore_index", "cli": "cloe",
                                         "license": "AGPL-3.0-or-later", "database": "Postgres"}
     version = run_cli_module("--version")
-    assert version.returncode == 0 and version.stdout.strip() == "cloe 0.0.3"
+    assert version.returncode == 0 and version.stdout.strip() == "cloe 0.0.4"
 
 
 def test_real_catalog_readback_in_simulated_installed_layout_preserves_frozen_prefix(tmp_path: Path, monkeypatch) -> None:

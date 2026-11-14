@@ -10,6 +10,7 @@ import subprocess
 import time
 from typing import Any, Protocol
 
+from common_lore_index import DISTRIBUTION_NAME
 from common_lore_index.runtime.plan import LocalRuntimePlan
 from tools.system.config import SystemTestError
 from tools.system.report import SystemStepResult
@@ -107,7 +108,7 @@ def run_mcp_public_readback(
 
         # Check response 1 (initialize)
         init_res = responses_by_id[1].get("result", {})
-        if init_res.get("serverInfo", {}).get("name") != "repomap-kg":
+        if init_res.get("serverInfo", {}).get("name") != DISTRIBUTION_NAME:
             raise SystemTestError(f"unexpected MCP serverInfo: {init_res}")
 
         # Check response 3 (repomap_list_graphs)

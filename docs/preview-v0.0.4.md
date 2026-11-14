@@ -1,8 +1,10 @@
 # Common Lore Index Preview v0.0.4
 
-Status: prospective source preview; staging qualification and promotion pending.
+The [v0.0.4 tag and GitHub source prerelease](https://github.com/Knowledge-Forge-AI/common-lore-index/releases/tag/v0.0.4)
+identify the published commit. On staging, these notes describe the candidate;
+release requires exact hosted qualification and the authorized main promotion.
 
-This is the first prospective release under the Common Lore Index (CLOE) name.
+This is the first source-preview version under the Common Lore Index (CLOE) name.
 Its repository and distribution are `common-lore-index`, canonical Python package
 `common_lore_index`, and preferred command `cloe`. `common-lore-index` is also a
 supported command; finite `repomap-kg` and documented `repomap_kg` launch/migration

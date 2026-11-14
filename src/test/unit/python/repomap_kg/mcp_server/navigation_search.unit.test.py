@@ -272,20 +272,21 @@ def test_schema_discovery_and_new_tool_default_equivalence(store: Path) -> None:
 
 def test_captured_entry_responses_and_errors_remain_byte_equal(tmp_path: Path,
                                                               monkeypatch: pytest.MonkeyPatch) -> None:
-    from repomap_test_support.node_location_fixtures import locator_home
+    from repomap_test_support.node_location_fixtures import entry_response_differences, locator_home
 
     home, _ = locator_home(tmp_path)
     monkeypatch.setenv("REPOMAP_HOME", str(home))
     monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
     golden = Path("src/test/resources/navigation_search_entry.json")
     cases = json.loads(golden.read_text())["cases"]
+    assert len(cases) == 67
     for case in cases:
         try:
             actual = {"payload": mcp.handle_tool_call(case["tool"], case["arguments"])["structuredContent"]}
         except RepoMapMcpError as error:
             actual = {"error_type": type(error).__name__, "error": str(error)}
         expected = {key: value for key, value in case.items() if key not in {"tool", "arguments"}}
-        assert json.dumps(actual, sort_keys=True, ensure_ascii=False) == json.dumps(expected, sort_keys=True, ensure_ascii=False)
+        assert json.dumps(actual, sort_keys=True, ensure_ascii=False) == json.dumps(expected, sort_keys=True, ensure_ascii=False), entry_response_differences(expected, actual)
 
 
 def publish_custom(database: Path, documents: dict[str, str], **options: Any) -> None:

@@ -73,10 +73,14 @@ def test_installed_config_migration_lifecycle(tmp_path_factory, tmp_path: Path) 
     home = legacy_tiny_home(owned / "owned homes" / "legacy home", material)
     expect = expectations()
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
-    version = project["version"]
+    incumbent_project = tomllib.loads(
+        (incumbent.source / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    incumbent_version = incumbent_project["version"]
+    assert incumbent_project["name"] == INCUMBENT_DISTRIBUTION
+    assert incumbent_version == "0.0.3"
     scripts = project["scripts"]
     source = {"R00": origin_source_values(ROOT),
-              "R02": {"incumbent_stdout": f"repomap-kg {version}\n",
+              "R02": {"incumbent_stdout": f"repomap-kg {incumbent_version}\n",
                       "dependency_pin": ",".join(expected_requires())}}
     run = OwnerRun("migration", intent_for("migration", preparation(candidate, incumbent), source))
     run.registry.own(owned)
@@ -127,7 +131,7 @@ def test_installed_config_migration_lifecycle(tmp_path_factory, tmp_path: Path) 
         if result.returncode != 0:
             return Observed(exit=result.exit, failure_code="child-exit-nonzero")
         expected_distributions = (
-            f"{INCUMBENT_DISTRIBUTION}=={version}", f"{TE_DISTRIBUTION}=={TE_VERSION}")
+            f"{INCUMBENT_DISTRIBUTION}=={incumbent_version}", f"{TE_DISTRIBUTION}=={TE_VERSION}")
         probe, payload, witness_ok = incumbent_origin_witness(old, ROOT, expected_distributions)
         if probe.returncode != 0 or payload is None:
             return Observed(exit=probe.exit, failure_code="witness-failed")

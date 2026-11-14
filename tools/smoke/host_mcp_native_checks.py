@@ -53,7 +53,7 @@ from repomap_test_support.host_mcp_stdio import initialize_request, tool_request
 from .host_mcp_native_fixture import FEED_SOURCE_ID, VISIBLE_GRAPHS, NativeFixture, stored_repository_facts
 from .host_mcp_native_launch import Expectation
 
-CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"  # 31 read tools
+CATALOG_SHA256 = "181c74446606a9abb2fd97567eb38157263dffa1f00c1616a43dcd8674d83cb8"  # 31 read tools
 BAD_ITEM = "python.module:not-a-feed-item"
 HIDDEN = "graph 'host-hidden' is not MCP-visible"
 RESTART_IDS = (20, 33, 45)  # one canonical, investigation and source/feed read

@@ -28,6 +28,17 @@ DOC = doc_page_key("root/docs/guide.md")
 BINDING = graph_source_binding_id(GRAPH, "root")
 
 
+def entry_response_differences(expected: object, actual: object, path: str = "") -> list[tuple[str, object, object]]:
+    """Explain exact captured public-fixture mismatches without normalizing them."""
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        return [difference for key in sorted(expected.keys() | actual.keys())
+                for difference in entry_response_differences(expected.get(key), actual.get(key), f"{path}/{key}")]
+    if isinstance(expected, list) and isinstance(actual, list) and len(expected) == len(actual):
+        return [difference for index, (old, new) in enumerate(zip(expected, actual))
+                for difference in entry_response_differences(old, new, f"{path}/{index}")]
+    return [] if expected == actual else [(path, expected, actual)]
+
+
 def _reference_observations(path: str, repository_paths: list[str]) -> list[RawObservation]:
     return [*extract_markdown_file_observations(
         path, "[Guide](guide.md)\n", repository_paths=set(repository_paths),

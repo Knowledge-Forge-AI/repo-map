@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from threading import Event
+import time
 from typing import Callable
 
 from common_lore_index.storage.staging_operation_contracts import (
@@ -39,7 +39,9 @@ class TestEventControlChannel:
         self._channel = channel
         self._selected_code = selected_code
         self._wait_seconds = float(wait_seconds)
-        self._blocker = blocker or Event().wait
+        # A condition-lock cleanup can replace KeyboardInterrupt with an
+        # ordinary RuntimeError. The test delay needs no shared lock or event.
+        self._blocker = blocker or time.sleep
         self._blocker_entered = blocker_entered or (lambda: None)
 
     def send(self, category: str, payload: dict[str, object]) -> None:

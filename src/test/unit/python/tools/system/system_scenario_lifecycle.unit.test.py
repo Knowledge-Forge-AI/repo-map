@@ -228,13 +228,14 @@ def test_step_4_idempotency_and_fencing(tmp_path: Path) -> None:
         assert evidence["replayed"] is True
 
 
-def test_step_5_mcp_public_readback(tmp_path: Path) -> None:
+@pytest.mark.parametrize("server_name", ["common-lore-index", "repomap-kg", "other", None])
+def test_step_5_mcp_public_readback(tmp_path: Path, server_name: str | None) -> None:
     timer = MonotonicTimer(total_budget_seconds=500.0, cleanup_reserve_seconds=20.0)
     plan = MagicMock()
     plan.env_file.exists.return_value = False
 
     rpc_responses = "\n".join(json.dumps(r) for r in (
-        {"jsonrpc": "2.0", "id": 1, "result": {"serverInfo": {"name": "repomap-kg", "version": "0.1.0"}}},
+        {"jsonrpc": "2.0", "id": 1, "result": {"serverInfo": {"name": server_name, "version": "0.0.4"}}},
         {"jsonrpc": "2.0", "method": "notifications/progress", "params": {"progress": 1}},
         {"jsonrpc": "2.0", "id": 3, "result": {"isError": False, "structuredContent": {"graphs": [{"graph_id": "fixture"}]}}},
         {"jsonrpc": "2.0", "id": 4, "result": {"isError": False, "structuredContent": {"graph_id": "fixture", "repository_name": "fixture", "canonical_nodes": 5, "canonical_edges": 3}}},
@@ -242,11 +243,14 @@ def test_step_5_mcp_public_readback(tmp_path: Path) -> None:
     )) + "\n"
 
     with patch("tools.system.scenario._run_compose", return_value=MagicMock(returncode=0, stdout=rpc_responses)):
-        res5, digest = step_5_mcp_public_readback(tmp_path, plan, timer)
-        assert res5.status == "passed"
-        assert digest is not None
-        assert len(digest) == 64
-        assert "canonical_semantic_sha256" in res5.details
+        if server_name != "common-lore-index":
+            with pytest.raises(SystemTestError, match="unexpected MCP serverInfo"):
+                step_5_mcp_public_readback(tmp_path, plan, timer)
+        else:
+            res5, digest = step_5_mcp_public_readback(tmp_path, plan, timer)
+            assert res5.status == "passed"
+            assert digest is not None and len(digest) == 64
+            assert "canonical_semantic_sha256" in res5.details
 
 
 def test_execute_all_scenarios_failure_duration(tmp_path: Path) -> None:

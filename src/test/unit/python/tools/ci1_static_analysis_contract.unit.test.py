@@ -34,7 +34,7 @@ def test_repomap_static_analysis_workflow_contracts() -> None:
     if not STATIC_WORKFLOW.exists():
         rel_workflow = ROOT / ".github/workflows/repomap-release-qualification.yml"
         workflow = load_workflow(rel_workflow)
-        assert workflow.name == "repomap-release-qualification"
+        assert workflow.name == "cloe-release-qualification"
         assert "pre-review-static" in workflow.jobs
         job = workflow.jobs["pre-review-static"]
         assert job["runs-on"] == "ubuntu-latest"

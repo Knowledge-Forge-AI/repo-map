@@ -83,3 +83,55 @@ def test_product_source_has_no_test_support_import_or_control() -> None:
     assert "repomap_test_support" not in source
     assert "scale14_event_control" not in source
     assert "SCALE14_CANCEL" not in source
+
+
+@pytest.mark.parametrize("route", ("proxy-default", "actual-cli-child"))
+def test_test_blocker_preserves_interrupt_at_condition_release_window(monkeypatch, route) -> None:
+    import threading
+    import time
+    from types import SimpleNamespace
+
+    from repomap_test_support import scale14_actual_refresh_child as child
+    from repomap_test_support import scale14_event_control as control
+
+    event = threading.Event()
+    condition = getattr(event, "_cond")
+    release = getattr(condition, "_release_save")
+
+    def release_then_interrupt():
+        release()
+        raise KeyboardInterrupt("after condition release")
+
+    def interrupted_sleep(_seconds):
+        raise KeyboardInterrupt("during lock-free delay")
+
+    # Event.wait loses this interrupt when its outer context releases the
+    # already-released lock. That RuntimeError is an ordinary telemetry error.
+    # Only the owned old-style blocker receives the fault. Other test-runner
+    # threads keep their real Condition and sleep implementations.
+    monkeypatch.setattr(condition, "_release_save", release_then_interrupt)
+    for module in (control, child):
+        monkeypatch.setattr(module, "Event", lambda: event, raising=False)
+        monkeypatch.setattr(module, "time", SimpleNamespace(sleep=interrupted_sleep), raising=False)
+    assert threading.Event().wait(0.0) is False
+    time.sleep(0.0)
+    payload: dict[str, object] = {"operation_code": "guard.source_index_stage", "event_category": "started"}
+    if route == "proxy-default":
+        controlled = TestEventControlChannel(
+            _Channel(), selected_code="guard.source_index_stage", wait_seconds=1.0)
+        with pytest.raises(KeyboardInterrupt):
+            controlled.send("operation", payload)
+    else:
+        product_cli = child.product_cli
+        assert product_cli is not None
+        monkeypatch.setattr(product_cli, "staging_event_channel_from_inherited_fd", lambda _fd: _Channel())
+        monkeypatch.setattr(child.cli_facade, "staging_event_channel_from_inherited_fd", lambda _fd: _Channel())
+
+        def product_main(_arguments):
+            product_cli.staging_event_channel_from_inherited_fd(0).send("operation", payload)
+            pytest.fail("selected blocker returned instead of propagating interruption")
+
+        monkeypatch.setattr(product_cli, "main", product_main)
+        with pytest.raises(KeyboardInterrupt):
+            child.main(["--cancel-code", "guard.source_index_stage", "--wait-seconds", "1",
+                        "--", "ops", "refresh-graph"])

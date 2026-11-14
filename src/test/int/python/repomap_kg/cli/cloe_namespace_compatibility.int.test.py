@@ -224,3 +224,51 @@ def test_mcp_serve_through_canonical_and_legacy_commands_is_read_only_and_identi
     for result in observed.values():
         assert str(home) not in result.stdout + result.stderr
     assert snapshot(tmp_path) == before
+
+
+def test_system_consumer_accepts_real_canonical_mcp_across_recreated_processes(tmp_path: Path) -> None:
+    from repomap_test_support.sqlite_local_harness import LocalHarness
+    from tools.system.scenario import MonotonicTimer
+    from tools.system.scenario_mcp import run_mcp_public_readback
+    from unittest.mock import MagicMock
+
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "calc.py").write_text("def add(a, b):\n    return a + b\n", encoding="utf-8")
+    home = write_sqlite_home(tmp_path / "explicit home", graph_toml("fixture", source))
+    harness = LocalHarness(tmp_path / "guarded processes", block_psycopg=True)
+    initialized = harness.cli_json("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "fixture")
+    assert initialized["result"] == "initialized"
+    harness.cli_json("ops", "refresh-graph", "--repo-map-home", str(home), "--graph", "fixture")
+    before = snapshot(home)
+    sessions: list[dict[int, dict[str, Any]]] = []
+
+    def real_stdio_transport(compose_dir: Path, argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        assert argv == ["--profile", "integration", "run", "--rm", "-i", "mcp"]
+        requests = [json.loads(line) for line in kwargs["stdin_input"].splitlines()]
+        replies = harness.mcp(home, requests)
+        assert replies[1]["result"]["serverInfo"] == {"name": "common-lore-index", "version": __version__}
+        sessions.append(replies)
+        output = "\n".join(json.dumps(value) for value in replies.values()) + "\n"
+        return subprocess.CompletedProcess(argv, 0, output, "")
+
+    result, digest = run_mcp_public_readback(
+        tmp_path, MagicMock(),  # Only the transport is bridged; the product and graph are real.
+        MonotonicTimer(total_budget_seconds=120, cleanup_reserve_seconds=10),
+        load_plan_env=lambda _plan: {}, run_compose=real_stdio_transport,
+    )
+    assert result.status == "passed" and len(digest) == 64 and len(sessions) == 2
+    projection = result.details["semantic_projection"]
+    assert projection["fixture_search_add_keys"] == ["python.function:calc:add"]
+    assert projection["fixture_status"]["canonical_nodes"] > 0
+    assert projection["fixture_status"]["canonical_edges"] > 0
+    after = snapshot(home)
+    # SQLite query-only connections may create their WAL-index cache. Durable
+    # graph/configuration bytes must remain exact, and the WAL must stay empty.
+    sidecars = "state/sqlite-local/graphs/fixture.sqlite3"
+    assert after.get(sidecars + "-wal") in (None, b"")
+    for suffix in ("-wal", "-shm"):
+        before.pop(sidecars + suffix, None)
+        after.pop(sidecars + suffix, None)
+    assert after == before, sorted(key for key in after.keys() | before.keys() if after.get(key) != before.get(key))
+    assert harness.forbidden_events() == []

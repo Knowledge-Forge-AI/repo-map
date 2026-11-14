@@ -25,7 +25,8 @@ from common_lore_index.server.mcp import tool_definitions
 
 MULTI, FEED = "host-multi", "host-feed"
 PRE_W3_CATALOG_SHA256 = "c487dc30ffa570f6ec80af68fabbb15d5b96bdb273e5fc375676c7174321189d"
-CURRENT_CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"
+PRE_REBRAND_CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"
+CURRENT_CATALOG_SHA256 = "181c74446606a9abb2fd97567eb38157263dffa1f00c1616a43dcd8674d83cb8"
 
 
 def test_native_smoke_catalog_pin_covers_the_optional_read_tool() -> None:
@@ -43,7 +44,19 @@ def test_native_smoke_catalog_pin_covers_the_optional_read_tool() -> None:
 
     # Confirm pre-W3 catalog constant reproduces under identical serialization when the
     # two W3 description additions ("SQLite Local and PostgreSQL" -> "SQLite Local") are reverted.
-    pre_w3_tools = copy.deepcopy(tools)
+    pre_rebrand_tools = copy.deepcopy(tools)
+    description_changes = set()
+    for tool in pre_rebrand_tools:
+        if "Common Lore Index" in tool["description"]:
+            tool["description"] = tool["description"].replace("Common Lore Index", "RepoMap")
+            description_changes.add(tool["name"])
+    assert description_changes == {
+        "repomap_projects", "repomap_canonical_nodes", "repomap_canonical_edges",
+        "repomap_explain_canonical_edge", "repomap_canonical_neighborhood",
+        "repomap_ingested_sources",
+    }
+    assert catalog_digest(pre_rebrand_tools) == PRE_REBRAND_CATALOG_SHA256
+    pre_w3_tools = copy.deepcopy(pre_rebrand_tools)
     for tool in pre_w3_tools:
         if tool["name"] in ("repomap_node_locations", "repomap_navigation_search"):
             tool["description"] = tool["description"].replace("SQLite Local and PostgreSQL", "SQLite Local", 1)

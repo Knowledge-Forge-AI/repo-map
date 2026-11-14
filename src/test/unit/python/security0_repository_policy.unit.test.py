@@ -69,7 +69,7 @@ def test_security0_root_security_policy_is_conservative() -> None:
         "## Disclosure And Good-Faith Boundaries",
     ):
         assert heading in policy
-    assert "`main` (unreleased)" in policy
+    assert "`main` development line" in policy
     assert "only supported development line" in normalized
     assert "do not open a public report" in normalized
     assert "issues, discussions, pull requests, or social media" in normalized

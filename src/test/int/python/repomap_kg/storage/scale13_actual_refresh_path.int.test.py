@@ -238,7 +238,14 @@ def test_actual_configured_refresh_cancels_without_partial_publication(
             "expected_started": cancel_code, "observed_started_count": len(started_codes),
             "return_code": return_code, "signal_count": signal_count,
         }
-        assert return_code != 0
+        assert return_code != 0, {
+            "role": "scale13_actual_refresh_child", "phase": "cancellation",
+            "cancel_code": cancel_code, "signal_count": signal_count,
+            "selected_events": tuple(
+                frame.payload.get("event_category") for frame in frames
+                if (frame.payload.get("phase_code") or frame.payload.get("operation_code")) == cancel_code
+            )[-12:],
+        }
         assert signal_count == 1
         params = _psycopg_connection_params_from_psql_args(
             graph_postgres.psql_args

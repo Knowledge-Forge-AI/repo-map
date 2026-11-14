@@ -54,7 +54,7 @@ def wheels(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     built = [old_build.wheel, new_build.wheel]
     old, new = built
     assert old.name.startswith("repomap_kg-0.0.3-")
-    assert new.name.startswith("common_lore_index-0.0.3-")
+    assert new.name.startswith("common_lore_index-0.0.4-")
     old_catalog = catalog_bytes(old, "repomap-kg")
     new_catalog = catalog_bytes(new, "common-lore-index")
     old_expected = {path.relative_to(incumbent / "src/main/resources").as_posix():
@@ -141,7 +141,7 @@ def test_fresh_candidate_commands_resources_and_finite_object_identity(wheels, t
     for name in ("cloe", "common-lore-index", "repomap-kg"):
         wrapper = python.parent / name
         result = run((str(wrapper), "--version"), tmp_path)
-        assert result.returncode == 0 and result.stdout == name + " 0.0.3\n"
+        assert result.returncode == 0 and result.stdout == name + " 0.0.4\n"
         assert bool(result.stderr) == (name == "repomap-kg")
         identity = run((str(wrapper), "identity", "--json"), tmp_path)
         payload = json.loads(identity.stdout)

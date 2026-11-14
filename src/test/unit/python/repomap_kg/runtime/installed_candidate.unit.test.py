@@ -16,7 +16,7 @@ from repomap_test_support.installed_candidate import (
 
 PYPROJECT = """[project]
 name = "common-lore-index"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = ["typing-extensions==4.16.0"]
 
 [project.scripts]
@@ -94,7 +94,7 @@ def test_expected_inventory_is_derived_from_owners_alone(tmp_path: Path) -> None
     assert {name for name in expected if name.startswith("repomap_kg/")} == {
         "repomap_kg/" + leaf for leaf in ("__init__.py", "__main__.py", "ops/__init__.py",
                                           "ops/config_migration.py", "server/__init__.py", "server/mcp.py")}
-    data = "common_lore_index-0.0.3.data/data/share/common-lore-index/rdbms"
+    data = "common_lore_index-0.0.4.data/data/share/common-lore-index/rdbms"
     assert f"{data}/changelog.yaml" in expected and f"{data}/2026/06/01.sql" in expected
     assert not any(name.endswith("02.sql") for name in expected)
     assert {f"{DIST_INFO}/licenses/LICENSE", f"{DIST_INFO}/licenses/NOTICE", f"{DIST_INFO}/RECORD"} <= expected
@@ -150,3 +150,21 @@ def test_material_refuses_an_unreviewed_message_body(tmp_path: Path) -> None:
     with pytest.raises(AssertionError, match="installed-message-fixture-unreviewed"):
         write_tiny_material(target, fixture)
     assert not target.exists()
+
+
+def test_candidate_pins_follow_current_release_and_keep_incumbent_frozen() -> None:
+    import tomllib
+
+    from installed_experience_pins import (
+        CANDIDATE_DISTRIBUTION, CANDIDATE_VERSION, CANDIDATE_WHEEL_PREFIX,
+        INCUMBENT_COMMIT, INCUMBENT_DISTRIBUTION, INCUMBENT_WHEEL_PREFIX,
+    )
+    from repomap_test_support.installed_candidate import ROOT
+
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
+    assert CANDIDATE_DISTRIBUTION == project["name"] == "common-lore-index"
+    assert CANDIDATE_VERSION == project["version"] == "0.0.4"
+    assert CANDIDATE_WHEEL_PREFIX == f"common_lore_index-{project['version']}-"
+    assert INCUMBENT_COMMIT == "6d818ad6d43d38d47c64b8c474c2b64b853f631a"
+    assert INCUMBENT_DISTRIBUTION == "repomap-kg"
+    assert INCUMBENT_WHEEL_PREFIX == "repomap_kg-0.0.3-"

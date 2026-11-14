@@ -6,7 +6,7 @@ import argparse
 from collections.abc import Sequence
 import os
 import sys
-from threading import Event
+import time
 
 import common_lore_index.cli as cli_facade
 import common_lore_index.cli.main as _cli_main_callable
@@ -83,7 +83,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
                 raise RuntimeError("test-controlled acknowledgement is missing")
             os.close(acknowledgement_fd)
             acknowledgement_closed = True
-        Event().wait(wait_seconds)
+        time.sleep(wait_seconds)
         if controls.fail_after_control:
             raise RuntimeError("test-controlled child failure")
 

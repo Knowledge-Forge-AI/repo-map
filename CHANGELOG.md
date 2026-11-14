@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Prospective v0.0.4: first Common Lore Index preview
+## [0.0.4] — First Common Lore Index source preview
 
 - Complete current repository, package, contributor and operator branding as
   Common Lore Index (CLOE); the public repository is
@@ -33,8 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Backfill annotated tags and GitHub prerelease entries for the three existing
   [RepoMap source previews](docs/releases/repomap-previews.md).
 
-The [v0.0.4 notes](docs/preview-v0.0.4.md) remain prospective until current
-hosted qualification passes and the operator-authorized promotion is completed.
+The [v0.0.4 notes](docs/preview-v0.0.4.md) describe this version's scope.
+The annotated tag and GitHub source prerelease identify its published commit.
+On staging, this entry describes the candidate until exact hosted qualification
+and the authorized ancestry-preserving promotion complete.
 
 ## [0.0.3] - 2026-10-29
 

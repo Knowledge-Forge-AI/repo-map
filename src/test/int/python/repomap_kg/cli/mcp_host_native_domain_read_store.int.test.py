@@ -43,7 +43,7 @@ from repomap_test_support.host_mcp_stdio import (
 )
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
-CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"  # 31 read tools
+CATALOG_SHA256 = "181c74446606a9abb2fd97567eb38157263dffa1f00c1616a43dcd8674d83cb8"  # 31 read tools
 CANARY_KEY = "REPOMAP_ENV_CANARY_PASSWORD_PROBE"
 BAD_ITEM = "python.module:not-a-feed-item"
 
