@@ -1,4 +1,4 @@
-"""CLI helpers shared by RepoMap tests."""
+"""CLI helpers shared by Common Lore Index tests."""
 
 from __future__ import annotations
 

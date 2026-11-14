@@ -52,7 +52,7 @@ def make_frozen_identity() -> dict[str, Any]:
 
 
 def make_pr_event_payload(
-    *, repository: str = "Knowledge-Forge-AI/repo-map", base_ref: str = "main",
+    *, repository: str = "Knowledge-Forge-AI/common-lore-index", base_ref: str = "main",
     head_ref: str = "staging", base_sha: str = BASE_PARENT_SHA, head_sha: str = HEAD_PARENT_SHA,
 ) -> dict[str, Any]:
     return {"pull_request": {
@@ -62,7 +62,7 @@ def make_pr_event_payload(
 
 def make_hosted_env(
     event_path: Path, *, run_attempt: str = "1", event_name: str = "pull_request",
-    repository: str = "Knowledge-Forge-AI/repo-map", github_sha: str = CANDIDATE_SHA,
+    repository: str = "Knowledge-Forge-AI/common-lore-index", github_sha: str = CANDIDATE_SHA,
     runner_os: str = "Linux", runner_arch: str = "X64",
 ) -> dict[str, str]:
     return {"GITHUB_EVENT_NAME": event_name, "GITHUB_EVENT_PATH": str(event_path), "GITHUB_REPOSITORY": repository,
@@ -299,7 +299,7 @@ def make_sealed_evidence(*, positive: bool = False) -> dict[str, Any]:
         freeze = json.loads((inner_dir / "freeze.json").read_text(encoding="utf-8"))
         exploration = json.loads((inner_dir / "exploration.json").read_text(encoding="utf-8"))
         cleanup = json.loads((inner_dir / "cleanup.json").read_text(encoding="utf-8"))
-    repo = "Knowledge-Forge-AI/repo-map"
+    repo = "Knowledge-Forge-AI/common-lore-index"
     return {
         "schema": SEALED_EVIDENCE_SCHEMA, "platform": "linux/amd64",
         "result": "passed" if positive else "refused", "qualified": bool(positive),

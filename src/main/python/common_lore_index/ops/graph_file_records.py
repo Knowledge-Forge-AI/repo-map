@@ -213,7 +213,7 @@ def format_graph_file_table(page: GraphFilePage) -> str:
         for column in columns
     }
     lines = [
-        "RepoMap canonical graph files",
+        "Common Lore Index canonical graph files",
         f"graph={page.graph_id} repository={page.repository_name}",
         (
             f"limit={page.limit} offset={page.offset} "

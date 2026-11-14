@@ -206,7 +206,7 @@ def initialize_coordinator_control(
 def format_coordinator_control_table(payload: dict[str, object]) -> str:
     """Format one bounded control lifecycle result."""
 
-    lines = ["RepoMap coordinator control", "field | value"]
+    lines = ["Common Lore Index coordinator control", "field | value"]
     for field in (
         "result",
         "database_available",

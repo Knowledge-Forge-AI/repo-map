@@ -1,4 +1,4 @@
-# RepoMap Package Dependency Matrix
+# Common Lore Index Package Dependency Matrix
 
 This document defines the allowed dependency direction for committed Python
 production modules. It applies to static imports at module and function scope,

@@ -26,6 +26,7 @@ class CliCoreUnitTests(unittest.TestCase):
             exit_code = main(["--version"])
 
         self.assertEqual(exit_code, 0)
+        self.assertEqual(__version__, "0.0.4")
         self.assertEqual(stdout.getvalue().strip(), f"cloe {__version__}")
 
     def test_identity_json_outputs_stable_project_metadata(self):
@@ -97,7 +98,8 @@ class CliCoreUnitTests(unittest.TestCase):
     def test_help_mentions_identity_command_and_project_purpose(self):
         help_text = build_parser().format_help()
 
-        self.assertIn("RepoMap", help_text)
+        self.assertIn("Common Lore Index", help_text)
+        self.assertNotIn("RepoMap", help_text)
         self.assertIn("identity", help_text)
         self.assertIn("deterministic knowledge graph", help_text)
 
@@ -131,7 +133,7 @@ class CliCoreUnitTests(unittest.TestCase):
                 {
                     "LANG": "C.UTF-8",
                     "HOME": "/placeholder/home",
-                    "DATABASE_PASSWORD": "synthetic-secret",
+                    "DATABASE_PASSWORD": "xxxxxxxxxxxxxxxx",
                 },
                 clear=True,
             ),

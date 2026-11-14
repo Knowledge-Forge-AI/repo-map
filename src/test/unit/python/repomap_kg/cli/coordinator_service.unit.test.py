@@ -175,7 +175,7 @@ def test_packaged_foreground_scrubs_ambient_authority_before_start():
         {
             "LANG": "C.UTF-8",
             "HOME": "/placeholder/home",
-            "DATABASE_PASSWORD": "synthetic-secret",
+            "DATABASE_PASSWORD": "xxxxxxxxxxxxxxxx",
             "UNRELATED": "value",
         },
         clear=True,
@@ -323,7 +323,7 @@ def test_foreground_without_packaged_psql_renders_recovery_table():
 
     assert exit_code == 0
     assert stdout.getvalue() == (
-        "RepoMap local coordinator ready\n"
+        "Common Lore Index local coordinator ready\n"
         "startup_recovery_scanned=2\n"
         "startup_recovery_resolved=1\n"
         "startup_recovery_pending=1\n"

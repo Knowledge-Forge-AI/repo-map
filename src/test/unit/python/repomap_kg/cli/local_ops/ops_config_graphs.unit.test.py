@@ -28,7 +28,7 @@ host = "127.0.0.1"
 port = 5432
 database = "repomap"
 user = "admin"
-password = "mcp-ops1-fake-password"
+password = "xxxxxxxxxxxxxxxx"
 
 [[graphs]]
 id = "repo-map"
@@ -66,7 +66,7 @@ mode = "read_only"
         self.assertEqual(payload["server_memory"]["path_expanded"], "[private-path]")
         self.assertNotIn(str(config_path), stdout.getvalue())
         self.assertNotIn("~/.codex/codex-vc", stdout.getvalue())
-        self.assertNotIn("mcp-ops1-fake-password", stdout.getvalue())
+        self.assertNotIn("xxxxxxxxxxxxxxxx", stdout.getvalue())
 
     def test_ops_config_check_text_output_stays_local_only(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -111,7 +111,7 @@ mode = "read_only"
                 exit_code = main(["ops", "config-check", "--config", str(config_path)])
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("RepoMap ops config status", stdout.getvalue())
+        self.assertIn("Common Lore Index ops config status", stdout.getvalue())
         self.assertIn("local_only=true", stdout.getvalue())
         self.assertIn("no_public_tunnel=true", stdout.getvalue())
         self.assertIn("no_destructive_operations=true", stdout.getvalue())
@@ -197,7 +197,7 @@ host = "127.0.0.1"
 port = 5432
 database = "repomap"
 user = "admin"
-password = "mcp-ops2-fake-password"
+password = "xxxxxxxxxxxxxxxx"
 
 [[graphs]]
 id = "repo-map"
@@ -250,7 +250,7 @@ mode = "read_only"
         self.assertEqual(payload["graphs"][1]["root_path_expanded"], "[private-root]")
         self.assertNotIn(str(config_path), stdout.getvalue())
         self.assertNotIn("~/.codex/codex-vc", stdout.getvalue())
-        self.assertNotIn("mcp-ops2-fake-password", stdout.getvalue())
+        self.assertNotIn("xxxxxxxxxxxxxxxx", stdout.getvalue())
 
     def test_ops_graphs_text_output_lists_graphs(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -295,7 +295,7 @@ mode = "read_only"
                 exit_code = main(["ops", "graphs", "--config", str(config_path)])
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("RepoMap ops graph registry", stdout.getvalue())
+        self.assertIn("Common Lore Index ops graph registry", stdout.getvalue())
         self.assertIn(
             "repo-map | repo-map | repomap | public-dev | true | true",
             stdout.getvalue(),

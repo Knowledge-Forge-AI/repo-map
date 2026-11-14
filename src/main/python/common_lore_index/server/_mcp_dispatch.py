@@ -1,4 +1,4 @@
-"""Tool dispatch and stdio JSON-RPC transport for RepoMap MCP server."""
+"""Tool dispatch and stdio JSON-RPC transport for Common Lore Index MCP server."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import json
 import sys
 from typing import Any, Callable, TextIO
 
-from common_lore_index import __version__
+from common_lore_index import DISTRIBUTION_NAME, __version__
 from common_lore_index.server._ops_records import McpOpsError
 from common_lore_index.server.mcp_core import (
     RepoMapMcpError,
@@ -135,7 +135,7 @@ def handle_jsonrpc_message(
             {
                 "protocolVersion": protocol_version,
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "repomap-kg", "version": __version__},
+                "serverInfo": {"name": DISTRIBUTION_NAME, "version": __version__},
             },
         )
     if method == "notifications/initialized":

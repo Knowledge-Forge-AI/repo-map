@@ -10,14 +10,14 @@ from common_lore_index.runtime import commands, release
 from repomap_test_support import d12_core_image as d12
 
 
-def test_candidate_header_matches_native_ci132_package_observation() -> None:
+def test_candidate_header_matches_native_ci144_package_observation() -> None:
     from common_lore_index.runtime import release_manifest
 
     rows = release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST["amd64"].builder
     header = next(row for row in rows if row.name == "linux-libc-dev")
     assert header == release.DebPackage(
-        "linux-libc-dev", "6.12.116-1", "all",
-        "c43f5c6dc104f2a2ce985d6d68d3575a7be6fe904313efa7b10edfa0170f9dce",
+        "linux-libc-dev", "6.12.117-1", "all",
+        "8b4848725a2705e5b1612f2135c44300716690ba762368ab87df127e9a5ed416",
     )
 
 

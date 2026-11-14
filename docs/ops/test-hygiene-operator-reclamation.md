@@ -8,8 +8,8 @@ explicit operator instruction in the same session.
 ## Destructive scope
 
 The command removes every entry and descendant under the explicitly selected
-scratch authority's `r` directory. It includes valid RepoMap runs, malformed
-or foreign manifests, non-RepoMap co-tenants, report-pending data, pinned data
+scratch authority's `r` directory. It includes valid Common Lore Index runs, malformed
+or foreign manifests, non-Common Lore Index co-tenants, report-pending data, pinned data
 when separately overridden, and other retained evidence that automated GC may
 never delete. The `r` directory itself remains.
 
@@ -24,7 +24,7 @@ There is no rollback promise.
 
 The scratch root must already exist, be explicitly selected through
 `REPOMAP_TEST_SCRATCH_ROOT`, be owner-private mode 0700, and carry the existing
-RepoMap index authority. The command has no path, project, glob, regular
+Common Lore Index index authority. The command has no path, project, glob, regular
 expression, or run-ID argument and never creates the selected root.
 
 The required confirmation value is exactly:
@@ -39,14 +39,14 @@ environment or configuration values do not authorize anything. As with any
 CLI argument, the literal may be visible in shell history or process
 inspection while the command runs.
 
-Live RepoMap runs block by default. `--force-live` is a separate explicit
+Live Common Lore Index runs block by default. `--force-live` is a separate explicit
 override, still requires the literal confirmation, writes durable
 `operator_interrupted` markers before deletion, and never kills a process.
 UNKNOWN liveness always refuses and has no override.
 
-Only an exact-valid RepoMap manifest supplies RepoMap liveness authority.
+Only an exact-valid Common Lore Index manifest supplies Common Lore Index liveness authority.
 Foreign, ambiguous, and opaque entries remain inside the explicitly confirmed
-broad deletion scope, but their manifest metadata cannot establish a RepoMap
+broad deletion scope, but their manifest metadata cannot establish a Common Lore Index
 LIVE or UNKNOWN veto. This does not make those entries automated-GC eligible,
 does not assert that a referenced foreign process is dead, and does not change
 the exact-valid UNKNOWN refusal.
@@ -123,7 +123,7 @@ Before PNR, private operation evidence also records aggregate running-state
 observations for foreign and ambiguous manifests. Positive PIDs use the
 existing read-only signal-zero probe for audit classification only; missing,
 non-integer, and nonpositive PIDs use an invalid/missing count. These counts
-never feed RepoMap LIVE/UNKNOWN, force, refusal, marker, or deletion authority
+never feed Common Lore Index LIVE/UNKNOWN, force, refusal, marker, or deletion authority
 and never enter public output. Permission failures classify UNKNOWN, so the
 counts are bounded observations rather than a complete co-tenant census.
 Ambiguous entries without a parseable manifest have no running state or PID to

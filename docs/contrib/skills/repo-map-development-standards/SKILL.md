@@ -1,9 +1,9 @@
 ---
 name: repo-map-development-standards
-description: Use when modifying RepoMap source, tests, docs, ADRs, status docs, or contributor guidance and needing the project's coding, dependency, scope, safety, and review standards.
+description: Use when modifying Common Lore Index source, tests, docs, ADRs, status docs, or contributor guidance and needing the project's coding, dependency, scope, safety, and review standards.
 ---
 
-# RepoMap Development Standards
+# Common Lore Index Development Standards
 
 ## Start Here
 
@@ -29,7 +29,7 @@ Use the human-facing standards under `docs/contrib/` as the source of truth:
 ## Working Rules
 
 - Keep work scoped to the active phase or user request.
-- Follow existing RepoMap module patterns before inventing new abstractions.
+- Follow existing Common Lore Index module patterns before inventing new abstractions.
 - Write idiomatic Python. Avoid Java-style layering and ceremony.
 - Separate IO, parsing/scanning, domain logic, storage/query logic, and
   formatting when that makes behavior clearer or easier to test.

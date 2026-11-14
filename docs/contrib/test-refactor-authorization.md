@@ -1,6 +1,6 @@
 # Test Refactor Authorization
 
-RepoMap's tests are among the largest and hardest-to-navigate files in the
+Common Lore Index's tests are among the largest and hardest-to-navigate files in the
 repository, so test organization improvement is a standing cross-cutting
 maintenance effort. This document owns the standing authorization and its
 boundaries.

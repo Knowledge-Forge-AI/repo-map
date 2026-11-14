@@ -340,7 +340,7 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
         self.assertIn("target database does not exist", missing_stderr)
         self.assertEqual(missing_events, ["exists"])
         self.assertEqual(table_exit, 0, table_stderr)
-        self.assertIn("RepoMap local DB drop: result=dry_run", table_stdout)
+        self.assertIn("Common Lore Index local DB drop: result=dry_run", table_stdout)
         self.assertIn("backup_first=true", table_stdout)
         self.assertIn("restore_command=", table_stdout)
         self.assertEqual(backup_exit, 1)

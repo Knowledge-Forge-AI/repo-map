@@ -1,4 +1,4 @@
-"""Source, bulk, API, GitHub, MCP, and server parser construction for the RepoMap CLI."""
+"""Source, bulk, API, GitHub, MCP, and server parser construction for the Common Lore Index CLI."""
 
 from __future__ import annotations
 
@@ -189,7 +189,7 @@ def add_source_commands(
 
     server = subparsers.add_parser(
         "server",
-        help="serve the long-running local RepoMap runtime API",
+        help="serve the long-running local Common Lore Index runtime API",
     )
     server_subcommands = server.add_subparsers(dest="server_command")
     server_serve = server_subcommands.add_parser(

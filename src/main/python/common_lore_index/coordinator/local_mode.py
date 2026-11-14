@@ -303,7 +303,7 @@ def format_coordinator_refresh_table(payload: Mapping[str, object]) -> str:
         raise CoordinatorModeError("coordinator_response_invalid")
     return "\n".join(
         (
-            "RepoMap coordinator refresh result",
+            "Common Lore Index coordinator refresh result",
             "field | value",
             f"result | {_required_text(payload, 'result')}",
             f"job_id | {_required_text(job, 'job_id')}",

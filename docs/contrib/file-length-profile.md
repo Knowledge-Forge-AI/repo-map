@@ -1,6 +1,6 @@
 # File-Length Profile
 
-RepoMap owns the deterministic `file-length` profile. It is independently
+Common Lore Index owns the deterministic `file-length` profile. It is independently
 executable now and is the stable repository entrypoint that `repo-map_runner`
 will orchestrate in a later phase.
 
@@ -123,7 +123,7 @@ python3 tools/ci/retained_python_ratchets.py \
 ```
 
 The explicit generation mode is only for later downward-only refreshes. The
-RepoMap baseline is already initialized; ordinary generation refuses a missing
+Common Lore Index baseline is already initialized; ordinary generation refuses a missing
 baseline and cannot create a new genesis:
 
 ```sh
@@ -177,7 +177,7 @@ same repository tree and tool version therefore produce identical JSON bytes.
 Text output sorts failures before warnings, then by descending line count and
 ascending path. It omits passing files.
 
-RepoMap owns this policy and executable contract. Future runner work may invoke
+Common Lore Index owns this policy and executable contract. Future runner work may invoke
 the repository entrypoint at an exact commit but must not redefine the profile.
 
 

@@ -248,7 +248,7 @@ class CliLocalDbLifecycleSmokeChainIntegrationTests(CliIntegrationTestCase):
         self.assertNotIn("TABLE public repositories", inspect_stdout)
 
         self.assertEqual(inspect_table_exit, 0, inspect_table_stderr)
-        self.assertIn("RepoMap local DB backup inspect", inspect_table_stdout)
+        self.assertIn("Common Lore Index local DB backup inspect", inspect_table_stdout)
         self.assertIn("dump_contents_read=true", inspect_table_stdout)
         self.assert_lifecycle_public_output_safe(
             inspect_table_stdout,

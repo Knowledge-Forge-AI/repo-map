@@ -2,18 +2,18 @@
 
 ## Supported Versions
 
-RepoMap is pre-release software. Until the first public release, the current
+Common Lore Index is pre-release software. The current
 `main` branch is the only supported development line. Historical commits,
 tags, snapshots, and private dogfood deployments do not receive a public
 support commitment.
 
 | Version | Supported |
 | --- | --- |
-| `main` (unreleased) | Yes |
+| `main` development line | Yes |
 | Historical development snapshots | No |
 
-This table will be revised when the first public release defines a release
-support policy.
+This development-only table will be revised when a release support policy is
+separately adopted. GitHub source previews do not create extended support terms.
 
 ## Reporting A Vulnerability
 
@@ -54,7 +54,7 @@ available evidence.
 
 ## Scope
 
-Security reports may cover RepoMap source, release packaging, dependency or
+Security reports may cover Common Lore Index source, release packaging, dependency or
 build-chain behavior, and the default local runtime. Relevant impacts include
 privilege violations, privacy failures, injection, path traversal, arbitrary
 execution, secret exposure, authentication or authorization failures,

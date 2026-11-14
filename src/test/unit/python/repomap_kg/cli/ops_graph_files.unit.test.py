@@ -165,7 +165,7 @@ class OpsGraphFilesCliUnitTests(unittest.TestCase):
                 main(["ops", "graph-files", "--graph", "public"]),
                 0,
             )
-        self.assertIn("RepoMap canonical graph files", stdout.getvalue())
+        self.assertIn("Common Lore Index canonical graph files", stdout.getvalue())
         self.assertIn("canonical_key", stdout.getvalue())
 
         stderr = io.StringIO()

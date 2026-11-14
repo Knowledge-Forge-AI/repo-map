@@ -277,7 +277,7 @@ class Product5JobControlIntegrationTests(unittest.TestCase):
     def test_job_control_table_formatting_complete_scenarios(self) -> None:
         health_with_diags = _valid_health_payload(version=2)
         formatted_health = format_coordinator_health_table({"health": health_with_diags})
-        self.assertIn("RepoMap coordinator health", formatted_health)
+        self.assertIn("Common Lore Index coordinator health", formatted_health)
         self.assertIn("recovery_diagnostic | sequence | category | summary", formatted_health)
         self.assertIn("recovery_diagnostic | 1 | worker_crash | exit_code_1", formatted_health)
 
@@ -311,7 +311,7 @@ class Product5JobControlIntegrationTests(unittest.TestCase):
             },
         }
         tbl_full = format_coordinator_job_table(job_full)
-        self.assertIn("RepoMap coordinator job", tbl_full)
+        self.assertIn("Common Lore Index coordinator job", tbl_full)
         self.assertIn("attempt_count | 2", tbl_full)
         self.assertIn("phase | scanning", tbl_full)
         self.assertIn("completed | 5", tbl_full)
@@ -328,12 +328,12 @@ class Product5JobControlIntegrationTests(unittest.TestCase):
             "next_cursor": "cursor_token_123",
         }
         tbl_jobs = format_coordinator_jobs_table(jobs_page)
-        self.assertIn("RepoMap coordinator jobs", tbl_jobs)
+        self.assertIn("Common Lore Index coordinator jobs", tbl_jobs)
         self.assertIn("j1 | synthetic-service | succeeded | 2026-10-04T12:00:00.000000Z", tbl_jobs)
         self.assertIn("next_cursor | cursor_token_123", tbl_jobs)
 
         tbl_empty_jobs = format_coordinator_jobs_table({"jobs": []})
-        self.assertIn("RepoMap coordinator jobs", tbl_empty_jobs)
+        self.assertIn("Common Lore Index coordinator jobs", tbl_empty_jobs)
         self.assertNotIn("next_cursor", tbl_empty_jobs)
 
         with self.assertRaises(CoordinatorModeError):

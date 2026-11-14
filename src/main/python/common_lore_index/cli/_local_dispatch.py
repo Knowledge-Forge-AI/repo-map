@@ -1,4 +1,4 @@
-"""Local-runtime command dispatch for the RepoMap CLI."""
+"""Local-runtime command dispatch for the Common Lore Index CLI."""
 
 from __future__ import annotations
 

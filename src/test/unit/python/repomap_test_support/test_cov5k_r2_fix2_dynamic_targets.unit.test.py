@@ -1,4 +1,4 @@
-"""Unit tests for FIX2 closed dynamic resolver domain (REVISE39, ADR0066)."""
+"""Unit tests for the Common Lore Index closed resolver domain (ADR0066)."""
 
 from __future__ import annotations
 
@@ -395,5 +395,5 @@ def test_current_preparation_owner_binding_passes_and_prior_digest_fails(prior_r
 def test_server_recovery_dispatch_has_current_closed_source_identity() -> None:
     module, qualified, digest, code_id = _python_identity("src/main/python/common_lore_index/cli/dispatch.py", "dispatch_command")
     assert (module, qualified) == ("common_lore_index.cli.dispatch", "common_lore_index.cli.dispatch.dispatch_command")
-    assert digest == "2e45c5a9c00f0a298178872ad260f9ec690e800fcb8be0b99eef9bf5fc977722" and digest != "d534f4c05ded72bfa9816e3d30d46039f8ca54a8b8543ddc1056e7360bc9ad5c"
+    assert digest == "805d96cd1a22c635f4066527b51c76eda6c47eb906bcdeb40e650d38f0e00e16" and digest not in {"2e45c5a9c00f0a298178872ad260f9ec690e800fcb8be0b99eef9bf5fc977722", "d534f4c05ded72bfa9816e3d30d46039f8ca54a8b8543ddc1056e7360bc9ad5c"}
     assert code_id == _code_object_identity(_resolve_symbol(module, "dispatch_command").__code__)

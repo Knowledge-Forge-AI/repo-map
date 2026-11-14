@@ -1,9 +1,9 @@
 # Debian stable slim maintenance
 
-ADR 0105 makes inherited Debian findings informational. RepoMap owns current
+ADR 0105 makes inherited Debian findings informational. Common Lore Index owns current
 official stable-slim inputs, its assembly changes, runtime functionality,
 dynamic Psycopg linkage, evidence integrity and cleanup. An affected Debian
-package does not imply that RepoMap CI must fail or that Debian was fixed.
+package does not imply that Common Lore Index CI must fail or that Debian was fixed.
 
 Before a new runtime/staging publication, run the read-only metadata check:
 

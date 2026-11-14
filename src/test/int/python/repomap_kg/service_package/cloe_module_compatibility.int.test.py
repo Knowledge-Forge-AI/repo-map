@@ -30,6 +30,11 @@ def test_persisted_legacy_definition_is_inspected_and_removed_without_activation
         ops = CoordinatorServiceOperations(old_spec, adapter, runner=runner,
                                            health_probe=lambda _spec: pytest.fail("legacy health probe"))
         ops.run("install")
+        if adapter_type is SystemdUserAdapter:
+            installed = adapter.target_path.read_bytes()
+            legacy = installed.replace(b"Description=Common Lore Index foreground coordinator", b"Description=RepoMap foreground coordinator", 1)
+            assert legacy != installed
+            adapter.target_path.write_bytes(legacy)
         before = adapter.target_path.read_bytes()
         monkeypatch.setattr(contract, "_IMPORT_PACKAGE", "common_lore_index", raising=False)
         ops.spec = contract.build_service_package_spec(home)
@@ -79,3 +84,32 @@ def test_malformed_plist_values_refuse_at_the_adapter_boundary(tmp_path, body):
         assert adapter.module_classification(content) == "unrecognized"
         with pytest.raises(ValueError, match="^service_definition_invalid$"):
             adapter.validate(content, spec)
+
+
+def test_current_module_with_legacy_description_validates_without_native_activation(tmp_path, monkeypatch):
+    home = tmp_path / "product-home"
+    setup_local_runtime(home)
+    config = home / "repomap.rpl.toml"
+    config.write_text(config.read_text().replace("[runtime]", '[runtime]\ncoordinator_mode = "native"'))
+    with controlled_service_authority(tmp_path / "executables"):
+        spec = contract.build_service_package_spec(home)
+        adapter = SystemdUserAdapter(user_home=tmp_path / "user", uid=os.getuid())
+        calls: list[tuple[str, ...]] = []
+        def runner(argv: tuple[str, ...]) -> int:
+            calls.append(argv)
+            return 0
+        ops = CoordinatorServiceOperations(spec, adapter, runner=runner,
+                                           health_probe=lambda _spec: pytest.fail("unexpected health probe"))
+        ops.run("install")
+        current = adapter.target_path.read_bytes()
+        legacy = current.replace(b"Description=Common Lore Index foreground coordinator", b"Description=RepoMap foreground coordinator", 1)
+        assert legacy != current
+        adapter.target_path.write_bytes(legacy)
+        calls.clear()
+        result = ops.run("validate")
+        assert isinstance(result, ServiceActionResult) and result.installed
+        assert adapter.module_classification(legacy) == "current"
+        assert not calls and adapter.target_path.read_bytes() == legacy
+        removed = ops.run("uninstall")
+        assert isinstance(removed, ServiceActionResult) and not adapter.target_path.exists()
+        assert all(argv not in calls for argv in (*adapter.start_commands(), *adapter.enable_commands(), *adapter.restart_commands()))

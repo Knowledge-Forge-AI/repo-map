@@ -1,7 +1,7 @@
-# RepoMap Contributor License Agreement
+# Common Lore Index Contributor License Agreement
 
 This contributor license agreement applies to contributions submitted to
-RepoMap.
+Common Lore Index (formerly RepoMap).
 
 ## Copyright
 
@@ -9,34 +9,34 @@ Contributors retain copyright in their contributions.
 
 ## Contribution Grant
 
-By submitting a contribution to RepoMap, you grant Samuel Leighton Lair, as
-RepoMap project steward, a perpetual, worldwide, non-exclusive, no-charge,
+By submitting a contribution to Common Lore Index, you grant Samuel Leighton Lair, as
+Common Lore Index project steward, a perpetual, worldwide, non-exclusive, no-charge,
 royalty-free, irrevocable copyright license to use, reproduce, prepare
 derivative works of, publicly display, publicly perform, sublicense,
-distribute, and otherwise exploit your contribution as part of RepoMap.
+distribute, and otherwise exploit your contribution as part of Common Lore Index.
 
 This copyright grant includes the right to license, sublicense, and relicense
-your contribution as part of RepoMap under:
+your contribution as part of Common Lore Index under:
 
 - AGPL-3.0-or-later;
 - commercial licenses; and
-- future RepoMap project licenses adopted by the project steward, including
+- future Common Lore Index project licenses adopted by the project steward, including
   open-source, source-available, and commercial licenses.
 
 ## Patent Grant
 
-By submitting a contribution to RepoMap, you grant Samuel Leighton Lair, as
-RepoMap project steward, a perpetual, worldwide, non-exclusive, no-charge,
+By submitting a contribution to Common Lore Index, you grant Samuel Leighton Lair, as
+Common Lore Index project steward, a perpetual, worldwide, non-exclusive, no-charge,
 royalty-free, irrevocable patent license under patent claims you own or control
 that are necessarily infringed by your contribution alone or by combination of
-your contribution with RepoMap.
+your contribution with Common Lore Index.
 
-This patent license permits Samuel Leighton Lair, as RepoMap project steward, to
+This patent license permits Samuel Leighton Lair, as Common Lore Index project steward, to
 make, have made, use, offer to sell, sell, import, reproduce, distribute,
-sublicense, and relicense your contribution as part of RepoMap, including under
+sublicense, and relicense your contribution as part of Common Lore Index, including under
 AGPL-3.0-or-later and commercial licenses.
 
-Downstream recipients receive patent rights only under the RepoMap license they
+Downstream recipients receive patent rights only under the Common Lore Index license they
 receive, such as AGPL-3.0-or-later or a separate commercial license granted by
 Samuel Leighton Lair or an authorized successor.
 
@@ -53,7 +53,7 @@ Each pull request must include this explicit acknowledgment in the pull request
 body:
 
 ```text
-I agree to the RepoMap contribution terms in CLA.md.
+I agree to the Common Lore Index contribution terms in CLA.md.
 ```
 
 A `Signed-off-by` line may be included, but it does not replace this explicit

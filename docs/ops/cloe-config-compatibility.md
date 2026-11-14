@@ -1,6 +1,6 @@
 # CLOE configuration compatibility
 
-Common Lore Index (CLOE) is RepoMap's selected successor identity. This first
+Common Lore Index (CLOE) is Common Lore Index's selected successor identity. This first
 compatibility sequence keeps the existing `repomap-kg` distribution, executable
 and import namespace while preparing the coordinated package cutover.
 It does not move an existing home or database.

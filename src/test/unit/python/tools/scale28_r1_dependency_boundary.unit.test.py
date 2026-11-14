@@ -53,3 +53,5 @@ def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
         assert module.PREFERRED_CLI == "cloe"
 # v0.0.2 dynamic target re-attestation.
 # v0.0.3 dynamic target re-attestation.
+
+# Common Lore Index v0.0.4 exact dynamic target re-attestation.

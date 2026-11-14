@@ -87,7 +87,7 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             )
 
         self.assertEqual(exit_code, 0, stderr)
-        self.assertIn("RepoMap local runtime setup", stdout)
+        self.assertIn("Common Lore Index local runtime setup", stdout)
         self.assertIn("direct_db=disabled", stdout)
         self.assertIn("server=127.0.0.1:55880", stdout)
         self.assertIn("Direct DB access disabled", stdout)

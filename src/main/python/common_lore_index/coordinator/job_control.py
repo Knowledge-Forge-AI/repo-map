@@ -196,7 +196,7 @@ def format_coordinator_jobs_table(payload: Mapping[str, object]) -> str:
     jobs = payload.get("jobs")
     if not isinstance(jobs, list):
         raise CoordinatorModeError("coordinator_response_invalid")
-    lines = ["RepoMap coordinator jobs", "job_id | graph_id | state | submitted_at"]
+    lines = ["Common Lore Index coordinator jobs", "job_id | graph_id | state | submitted_at"]
     for item in jobs:
         job = _validated_list_item(item, None)
         lines.append(
@@ -215,7 +215,7 @@ def format_coordinator_job_table(payload: Mapping[str, object]) -> str:
     if not isinstance(job, Mapping):
         raise CoordinatorModeError("coordinator_response_invalid")
     lines = [
-        "RepoMap coordinator job",
+        "Common Lore Index coordinator job",
         "field | value",
         f"result | {_required_text(payload, 'result')}",
         f"job_id | {_required_text(job, 'job_id')}",
@@ -240,7 +240,7 @@ def format_coordinator_health_table(payload: Mapping[str, object]) -> str:
 
     health = _validated_health(payload.get("health"))
     lines = [
-        "RepoMap coordinator health",
+        "Common Lore Index coordinator health",
         f"health_schema_version | {health['health_schema_version']}",
         f"status | {health['status']}",
         "section | status",

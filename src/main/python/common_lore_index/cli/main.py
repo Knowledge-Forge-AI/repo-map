@@ -1,4 +1,4 @@
-"""Command-line entry point for RepoMap."""
+"""Command-line entry point for Common Lore Index."""
 
 from __future__ import annotations
 

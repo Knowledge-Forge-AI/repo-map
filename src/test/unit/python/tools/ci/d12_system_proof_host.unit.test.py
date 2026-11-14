@@ -211,7 +211,7 @@ def test_direct_host_proof_verification_and_facade_equivalence(tmp_path: Path) -
         candidate_head_parent="d" * 40,
         approval_id="pr-23",
         pr_number="23",
-        repository="Knowledge-Forge-AI/repo-map",
+        repository="Knowledge-Forge-AI/common-lore-index",
     )
     common_kwargs: dict[str, Any] = {
         "repo_root": REPO_ROOT,

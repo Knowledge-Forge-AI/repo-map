@@ -109,7 +109,7 @@ def _make_config(report_dir: Path, run_id: str | None = None) -> SystemTestConfi
     return SystemTestConfig.create(
         timeout_seconds=1500, report_dir=report_dir, candidate_tree_sha="b" * 40,
         run_id=run_id or _active_run_id(), gate_kind="main-system", approval_id="pr-23", pr_number="23",
-        repository="Knowledge-Forge-AI/repo-map", approved_base_branch="main", approved_base_sha=BASE_SHA,
+        repository="Knowledge-Forge-AI/common-lore-index", approved_base_branch="main", approved_base_sha=BASE_SHA,
         approved_head_branch="staging", approved_head_sha="d" * 40, candidate_commit_sha="a" * 40,
         candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, execution_mode="hosted_qualification",
     )

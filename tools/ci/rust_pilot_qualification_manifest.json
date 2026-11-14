@@ -27,7 +27,7 @@
     "python_digests": [
       {
         "path": "src/main/python/common_lore_index/__init__.py",
-        "sha256": "92e28ff0ce66fe80bd366a57157dc2798aaab98d44338bb2ef69df58ea915ecc"
+        "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114"
       },
       {
         "path": "src/main/python/common_lore_index/canonicalization/__init__.py",
@@ -987,7 +987,7 @@
       },
       {
         "path": "src/main/python/common_lore_index/runtime/release_manifest.py",
-        "sha256": "fe73aa84cc27a40a3864b7f315f16314d5b44a5de62f8b13d2b954cb595167ca"
+        "sha256": "550eb3a1bbf8d57519a25e4dae3d6170ee115864ec8529c215396b67fc2bd95d"
       },
       {
         "path": "src/test/support/python/repomap_test_support/__init__.py",
@@ -1019,7 +1019,7 @@
       },
       {
         "path": "tools/ci/d12_system_grant.py",
-        "sha256": "34915f54503c8ea82b1a902cf266f084690104fb52d678d53460e7293b16b8ad"
+        "sha256": "8adad8301f045df4cd78b3c8d2172dd61388b0f0ac46c3f970c71687559a4cce"
       },
       {
         "path": "tools/ci/d12_system_grant_io.py",

@@ -224,7 +224,7 @@ class OpsRefreshFacadeSummaryUnitTests(OpsRefreshUnitTestCase):
         self.assertFalse(payload["safety"]["graph_root_read"])
         self.assert_public_payload_excludes_local_paths(payload)
         self.assertNotIn("payload_json", json.dumps(payload).lower())
-        self.assertIn("RepoMap ops graph summary", table)
+        self.assertIn("Common Lore Index ops graph summary", table)
         self.assertEqual(payload["graph"]["raw_observations"], 351)
         self.assertEqual(payload["graph"]["raw_observations_total"], 351)
         self.assertEqual(payload["graph"]["latest_run_raw_observations"], 64)

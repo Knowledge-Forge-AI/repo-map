@@ -1,4 +1,4 @@
-"""Ops graph, refresh, baseline, and inspect parser construction for RepoMap CLI."""
+"""Ops graph, refresh, baseline, and inspect parser construction for Common Lore Index CLI."""
 
 from __future__ import annotations
 

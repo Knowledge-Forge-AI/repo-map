@@ -345,7 +345,7 @@ def serve_local_http(
             installed_sigterm = False
 
     print(
-        f"RepoMap local server listening on {host}:{port}",
+        f"Common Lore Index local server listening on {host}:{port}",
         file=sys.stderr,
         flush=True,
     )

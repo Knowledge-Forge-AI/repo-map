@@ -1,12 +1,12 @@
-# Contributing to RepoMap
+# Contributing to Common Lore Index
 
-RepoMap accepts contributions only under the project contribution terms in
+Common Lore Index accepts contributions only under the project contribution terms in
 [CLA.md](CLA.md).
 
 Contributors retain copyright in their contributions. By submitting a
-contribution, the contributor grants Samuel Leighton Lair, as RepoMap project
+contribution, the contributor grants Samuel Leighton Lair, as Common Lore Index project
 steward, broad copyright and patent rights to use, modify, distribute,
-sublicense, and relicense the contribution as part of RepoMap, including under
+sublicense, and relicense the contribution as part of Common Lore Index, including under
 AGPL-3.0-or-later and commercial licenses.
 
 Contributions must be original work or submitted with authority from the
@@ -17,7 +17,7 @@ Every pull request must include this explicit acknowledgment in the pull
 request body:
 
 ```text
-I agree to the RepoMap contribution terms in CLA.md.
+I agree to the Common Lore Index contribution terms in CLA.md.
 ```
 
 A `Signed-off-by` line may be included, but it does not replace the explicit

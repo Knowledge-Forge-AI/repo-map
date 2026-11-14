@@ -1737,3 +1737,26 @@ grant5-unit/4-integration proof and strict static pass. Official context889/clos
 are rechecked after rendering, with old source pins distinct from rendered guard
 pins. Final independent tree review, exact commit/report and one staging push
 remain pending; full hosted coverage/native qualification is not inferred.
+
+
+### Common Lore Index v0.0.4 rebrand and CI144 repair
+
+ADR0195 finishes current branding and coordinates source/package/root-lock
+version 0.0.4. The public repository is common-lore-index; the private development
+repository and physical checkout use common-lore-index_dev. Stable repository
+IDs, history and concurrent private source are preserved. The old local path is
+a compatibility alias for existing tooling, not a duplicate checkout.
+
+The historical RepoMap v0.0.1/v0.0.2/final v0.0.3 tags and GitHub prerelease
+entries are backfilled from their exact corrected-history commits. The final
+v0.0.3 identity remains 5ad00d162ad8a04430874275246a53227578c533 (CI87/PR13).
+See the historical release index; earlier interim notes are retained separately.
+
+CI144 passed unit/staging/static/native but refused system preflight before any
+application build because linux-libc-dev advanced to 6.12.117-1. The new candidate
+refreshes only that verified builder pin/hash, preserving exact validation,
+dynamic linking and informational upstream-OS findings. Scoped source/grant proof
+and serial dynamic_default independent review precede a fresh normal campaign.
+Main promotion and the first Common Lore Index release v0.0.4 require passing
+current same-attempt qualification. Remaining W5/W6/W7/W8 and v0.1.0 work continue
+after that release; no source-preview operation implies package-manager delivery.

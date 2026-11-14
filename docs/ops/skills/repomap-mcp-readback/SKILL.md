@@ -1,14 +1,14 @@
 ---
 name: repomap-mcp-readback
-description: Use when querying a loaded RepoMap graph through the read-only RepoMap MCP server, selecting projects or configured graphs, reading canonical nodes, edges, evidence, neighborhoods, search results, source/feed facts, or bounded summaries from an MCP-capable coding agent.
+description: Use when querying a loaded Common Lore Index graph through the read-only Common Lore Index MCP server, selecting projects or configured graphs, reading canonical nodes, edges, evidence, neighborhoods, search results, source/feed facts, or bounded summaries from an MCP-capable coding agent.
 ---
 
-# RepoMap MCP Readback
+# Common Lore Index MCP Readback
 
 ## Overview
 
-Use the RepoMap MCP server as a read-only graph readback layer over storage
-databases that local RepoMap ops maintain outside MCP. MCP does not discover
+Use the Common Lore Index MCP server as a read-only graph readback layer over storage
+databases that local Common Lore Index ops maintain outside MCP. MCP does not discover
 source files, refresh graphs, load observations, mutate storage, run shell
 commands, run database lifecycle actions, or change graph identity. This
 skill owns the query workflow; registry and environment configuration belong
@@ -241,7 +241,7 @@ legacy consumer still needs the older bare shape.
   `storage.error` or per-graph `error`; the others refuse with bounded text.
 - If a call fails, report the exact error and which layer failed:
   configuration, session exposure, approval policy, storage connection, or
-  RepoMap query.
+  Common Lore Index query.
 - If readback appears stale, repair the configured graph through local ops
   outside MCP (`repomap-cli-workflow`); do not ask for write tools.
 

@@ -279,7 +279,7 @@ refresh_policy = "watch"
 
         table = format_ops_graph_registry_table(config)
 
-        self.assertIn("RepoMap ops graph registry", table)
+        self.assertIn("Common Lore Index ops graph registry", table)
         self.assertIn(
             "id | repository | database | privacy | enabled | mcp_visible | refresh | db | warnings",
             table,
@@ -302,7 +302,7 @@ refresh_policy = "watch"
 
         table = format_ops_config_status_table(config)
 
-        self.assertIn("RepoMap ops config status", table)
+        self.assertIn("Common Lore Index ops config status", table)
         self.assertIn("graphs: total=1 enabled=1 private_enabled=0", table)
         self.assertIn("db_checked=false", table)
         self.assertIn("[REDACTED]", table)

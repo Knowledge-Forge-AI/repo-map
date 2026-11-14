@@ -1,7 +1,7 @@
-# RepoMap Operations Documentation
+# Common Lore Index Operations Documentation
 
 This directory holds public operational documentation for running and
-maintaining RepoMap: operator/runtime AI-agent skills under
+maintaining Common Lore Index: operator/runtime AI-agent skills under
 [skills/](skills/README.md) and durable operations references that those
 skills link to for detail.
 

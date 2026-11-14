@@ -100,5 +100,5 @@ class LocalDbBackupDumpListingBoundariesUnitTests(LocalDbBackupUnitTestCase):
             info = read_backup_info(home, backup_dir / "manifest.json")
             table = format_backup_info_table(info)
 
-            self.assertIn("RepoMap local DB backup info", table)
+            self.assertIn("Common Lore Index local DB backup info", table)
             self.assertIn("restore_supported=false", table)

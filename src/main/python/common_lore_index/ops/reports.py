@@ -69,7 +69,7 @@ def format_preflight_table(
     )
     graph = payload["graph"]
     lines = [
-        "RepoMap ops refresh preflight",
+        "Common Lore Index ops refresh preflight",
         (
             "summary: "
             f"result={payload['result']} "
@@ -156,7 +156,7 @@ def format_refresh_result_table(
 ) -> str:
     payload = refresh_result_to_jsonable(config, results, command=command)
     lines = [
-        "RepoMap ops refresh result",
+        "Common Lore Index ops refresh result",
         (
             "summary: "
             f"command={command} "
@@ -324,7 +324,7 @@ def format_refresh_status_table(
 ) -> str:
     payload = refresh_status_to_jsonable(config, statuses, graph_ids=graph_ids)
     lines = [
-        "RepoMap ops refresh status",
+        "Common Lore Index ops refresh status",
         (
             "graphs: "
             f"total={payload['graph_count']} "
@@ -503,7 +503,7 @@ def format_baseline_save_table(
 ) -> str:
     payload = baseline_save_to_jsonable(config, result)
     lines = [
-        "RepoMap ops baseline save",
+        "Common Lore Index ops baseline save",
         (
             "summary: "
             f"result={payload['result']} "
@@ -573,7 +573,7 @@ def format_baseline_prune_table(
 ) -> str:
     payload = baseline_prune_to_jsonable(config, result)
     lines = [
-        "RepoMap ops baseline prune",
+        "Common Lore Index ops baseline prune",
         (
             "summary: "
             f"result={payload['result']} "
@@ -641,7 +641,7 @@ def drift_check_to_jsonable(
 def format_drift_check_table(config: OpsConfig, drift_check: OpsGraphDriftCheck) -> str:
     payload = drift_check_to_jsonable(config, drift_check)
     lines = [
-        "RepoMap ops drift check",
+        "Common Lore Index ops drift check",
         (
             "summary: "
             f"result={payload['result']} "
@@ -705,7 +705,7 @@ def format_graph_summary_table(config: OpsConfig, summary: OpsGraphSummary) -> s
     payload = graph_summary_to_jsonable(config, summary)
     graph = payload["graph"]
     lines = [
-        "RepoMap ops graph summary",
+        "Common Lore Index ops graph summary",
         (
             "summary: "
             f"result={payload['result']} "

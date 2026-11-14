@@ -160,7 +160,7 @@ def test_seed_public_entry_boundary() -> None:
             responses = run_mcp_stdio_requests(mcp_config, postgres.psql_command, rpc_requests, reader_role=READER)
             resp_by_id = {r["id"]: r for r in responses}
 
-            assert resp_by_id[1]["result"]["serverInfo"]["name"] == "repomap-kg"
+            assert resp_by_id[1]["result"]["serverInfo"]["name"] == "common-lore-index"
             assert any(t["name"] == "repomap_similar_nodes" for t in resp_by_id[2]["result"]["tools"])
 
             def _sc(req_id: int) -> dict[str, Any]:

@@ -69,7 +69,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
             "ops", "graphs", "--repo-map-home", "docs/examples/repo-map-home"
         )
         self.assertEqual(exit_code, 0)
-        self.assertIn("RepoMap ops graph registry", stdout)
+        self.assertIn("Common Lore Index ops graph registry", stdout)
         self.assertIn("repo-map | repo-map | repomap_repo_map | public-dev | true | true", stdout)
         self.assertIn("private-ops | private-ops | [private-database] | private-ops | false | false", stdout)
         self.assertNotIn("repomap_private_ops", stdout)
@@ -107,7 +107,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
             )
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("RepoMap ops config status", stdout)
+        self.assertIn("Common Lore Index ops config status", stdout)
         self.assertIn("password=[REDACTED]", stdout)
         self.assertIn("diagnostics: warning=1", stdout)
         self.assertNotIn("mcp-ops1-fake-password", stdout)
@@ -121,7 +121,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
             'repository_name = "codex-vc"\ndatabase = "repomap_codex_vc"\nprivacy = "private-ops"\n'
             'enabled = true\nmcp_visible = false\nextractor_profile = "private-ops"\nrefresh_policy = "watch"\n'
             '[[sources.feed]]\nid = "private-feed"\ngraph_id = "repo-map"\n'
-            'url = "https://agent:mcp-ops1-fake-token@example.invalid/feed.xml"\nenabled = true\n'
+            'url = "https://agent:xxxxxxxxxxxxxxxx@example.invalid/feed.xml"\nenabled = true\n'
             '[[sources.github]]\nid = "public-github"\ngraph_id = "repo-map"\n'
             'owner = "example"\nrepo = "repo"\nmode = "public_readonly"\nenabled = true\n'
             '[[sources.api]]\nid = "api-placeholder"\ngraph_id = "repo-map"\n'
@@ -149,7 +149,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
         self.assertIn("[REDACTED]", json.dumps(payload["sources"], sort_keys=True))
         self.assertTrue(payload["safety"]["no_server_memory_read"])
         self.assertTrue(payload["safety"]["no_source_acquisition"])
-        self.assertNotIn("mcp-ops1-fake-token", stdout)
+        self.assertNotIn("xxxxxxxxxxxxxxxx", stdout)
         self.assertNotIn("mcp-ops1-fake-credential", stdout)
         self.assertEqual(stderr, "")
 
@@ -275,7 +275,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = self.write_ops_config(
                 Path(tmpdir),
-                OPS_CONFIG_TEMPLATE + '\n[experimental]\nsecret_token = "mcp-ops1-fake-token"\n\n[service.extra]\nignored = true\n',
+                OPS_CONFIG_TEMPLATE + '\n[experimental]\nsecret_token = "xxxxxxxxxxxxxxxx"\n\n[service.extra]\nignored = true\n',
             )
             exit_code, stdout, stderr = self.run_module_entrypoint(
                 "ops", "config-check", "--config", str(config_path), "--json"
@@ -286,7 +286,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
         codes = {diagnostic["code"] for diagnostic in payload["diagnostics"]}
         self.assertIn("unknown-top-level-section", codes)
         self.assertIn("unknown-service-field", codes)
-        self.assertNotIn("mcp-ops1-fake-token", stdout)
+        self.assertNotIn("xxxxxxxxxxxxxxxx", stdout)
         self.assertEqual(stderr, "")
 
     def test_ops_config_check_reports_validation_errors_without_secret_leakage(self):
@@ -294,7 +294,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
             config_path = self.write_ops_config(
                 Path(tmpdir),
                 OPS_CONFIG_TEMPLATE.replace('mode = "local"', 'mode = "cloud"')
-                + '\n[experimental]\nsecret_token = "mcp-ops1-fake-token"\n',
+                + '\n[experimental]\nsecret_token = "xxxxxxxxxxxxxxxx"\n',
             )
             exit_code, stdout, stderr = self.run_module_entrypoint(
                 "ops", "config-check", "--config", str(config_path), "--json"
@@ -304,7 +304,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
         self.assertEqual(stdout, "")
         self.assertIn("ERROR:", stderr)
         self.assertIn("service.mode", stderr)
-        self.assertNotIn("mcp-ops1-fake-token", stderr)
+        self.assertNotIn("xxxxxxxxxxxxxxxx", stderr)
 
     def test_ops_config_check_reports_missing_and_unsupported_schema_versions(self):
         with tempfile.TemporaryDirectory() as tmpdir:

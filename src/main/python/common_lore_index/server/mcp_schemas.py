@@ -19,7 +19,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         {
             "name": "repomap_projects",
-            "description": "List configured read-only RepoMap MCP projects.",
+            "description": "List configured read-only Common Lore Index MCP projects.",
             "inputSchema": {
                 "type": "object",
                 "properties": {},
@@ -29,7 +29,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         },
         tool_definition(
             "repomap_canonical_nodes",
-            "Read canonical graph nodes from RepoMap storage.",
+            "Read canonical graph nodes from Common Lore Index storage.",
             {
                 "kind": {"type": "string"},
                 "canonical_key": {"type": "string"},
@@ -47,7 +47,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         tool_definition(
             "repomap_canonical_edges",
-            "Read canonical graph edges from RepoMap storage.",
+            "Read canonical graph edges from Common Lore Index storage.",
             {
                 "kind": {"type": "string"},
                 "source_key": {"type": "string"},
@@ -69,7 +69,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         tool_definition(
             "repomap_explain_canonical_edge",
-            "Read one canonical edge and its evidence from RepoMap storage.",
+            "Read one canonical edge and its evidence from Common Lore Index storage.",
             {
                 "source_key": {"type": "string"},
                 "kind": {"type": "string"},
@@ -101,7 +101,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         tool_definition(
             "repomap_canonical_neighborhood",
-            "Read a depth-1 canonical graph neighborhood from RepoMap storage.",
+            "Read a depth-1 canonical graph neighborhood from Common Lore Index storage.",
             {
                 "node": {"type": "string"},
                 "direction": {
@@ -143,7 +143,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         tool_definition(
             "repomap_ingested_sources",
-            "List read-only RSS2-ingested source summaries from RepoMap storage.",
+            "List read-only RSS2-ingested source summaries from Common Lore Index storage.",
             {
                 "source_type": {"type": "string"},
                 "policy_status": {"type": "string"},

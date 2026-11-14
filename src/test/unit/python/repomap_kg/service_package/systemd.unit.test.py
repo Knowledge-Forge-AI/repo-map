@@ -212,3 +212,34 @@ def test_systemd_lexical_python_digest_and_stale_reference(
         elif stale_state == "dangling":
             invoked.symlink_to(tmp_path / "absent" / "python3")
         assert adapter.recognizes(content) is (stale_state == "missing")
+
+
+@pytest.mark.parametrize("module", ["common_lore_index", "repomap_kg"])
+def test_systemd_keeps_exact_legacy_description_without_accepting_other_drift(
+    tmp_path, service_authority, module
+):
+    adapter = SystemdUserAdapter(user_home=tmp_path / "user", uid=1000)
+    with patch.object(contract, "_IMPORT_PACKAGE", module):
+        spec = build_service_package_spec(tmp_path / "home")
+    current = adapter.render(spec)
+    description = b"\nDescription=Common Lore Index foreground coordinator\n"
+    legacy_description = b"\nDescription=RepoMap foreground coordinator\n"
+    assert current.count(description) == 1
+    legacy = current.replace(description, legacy_description, 1)
+    assert legacy != current
+    for content in (current, legacy):
+        assert adapter.recognizes(content)
+        adapter.validate(content, spec)
+        assert adapter.module_classification(content) == (
+            "current" if module == "common_lore_index" else "legacy"
+        )
+    for content in (
+        legacy.replace(legacy_description, b"\nDescription=Unknown coordinator\n"),
+        legacy.replace(b"RestartSec=10s", b"RestartSec=11s"),
+        legacy.replace(b"X-RepoMap-Service-Package=1", b"X-RepoMap-Service-Package=2"),
+        legacy + b"ExecStop=\"/bin/false\"\n",
+        legacy.replace(legacy_description, legacy_description + legacy_description),
+    ):
+        assert not adapter.recognizes(content)
+        with pytest.raises(ValueError, match="^service_definition_invalid$"):
+            adapter.validate(content, spec)

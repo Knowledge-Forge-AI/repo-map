@@ -117,7 +117,7 @@ class StorageOpsRefreshPreflightIntegrationTests(unittest.TestCase):
         self.assertTrue(payload["graphs"][0]["exclude_paths_enforced"])
         self.assertNotIn("codex-vc", stdout)
         self.assertEqual(table_exit_code, 0, table_stderr)
-        self.assertIn("RepoMap ops refresh result", table_stdout)
+        self.assertIn("Common Lore Index ops refresh result", table_stdout)
         self.assertIn("repo-map | repo-map | repomap_test | public-dev | success", table_stdout)
         self.assertNotIn("codex-vc", table_stdout)
         self.assertEqual(repository_names, "repo-map")
@@ -238,7 +238,7 @@ class StorageOpsRefreshPreflightIntegrationTests(unittest.TestCase):
         self.assertFalse(payload["safety"]["storage_written"])
         self.assertFalse(payload["safety"]["destructive_db_actions"])
         self.assertNotIn("fixture-secret-memory-value", stdout)
-        self.assertIn("RepoMap ops refresh preflight", table_stdout)
+        self.assertIn("Common Lore Index ops refresh preflight", table_stdout)
         self.assertIn("storage_written=false", table_stdout)
 
     def test_ops_refresh_preflight_cli_reports_nix_hazards_bounded(self):

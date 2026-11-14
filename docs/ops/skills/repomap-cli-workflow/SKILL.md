@@ -1,15 +1,15 @@
 ---
 name: repomap-cli-workflow
-description: Use when operating RepoMap outside MCP to maintain folder-backed graph databases, refresh configured graphs, check drift against baselines, query canonical CLI readback, run backup-first database lifecycle commands, or route explicit source ingestion.
+description: Use when operating Common Lore Index outside MCP to maintain folder-backed graph databases, refresh configured graphs, check drift against baselines, query canonical CLI readback, run backup-first database lifecycle commands, or route explicit source ingestion.
 ---
 
-# RepoMap CLI Workflow
+# Common Lore Index CLI Workflow
 
 ## Overview
 
-Operate RepoMap as a local repository graph builder and readback surface. The
+Operate Common Lore Index as a local repository graph builder and readback surface. The
 default operating model is folder-backed: graphs configured under
-`REPOMAP_HOME` are backed by local folder trees or repositories, and RepoMap
+`REPOMAP_HOME` are backed by local folder trees or repositories, and Common Lore Index
 local ops keep each graph database aligned with its root. Extraction, refresh,
 ingestion, and database lifecycle operations happen through this CLI workflow;
 MCP is a separate read-only query surface.
@@ -204,7 +204,7 @@ extractor versions belong to evidence readback.
 ## Database Lifecycle Boundary
 
 Database lifecycle commands are local administrative operations scoped to
-RepoMap-owned runtime containers:
+Common Lore Index-owned runtime containers:
 
 ```sh
 cloe local db dump --repo-map-home <home> --database <database>
@@ -218,7 +218,7 @@ cloe local db upgrade-schema --repo-map-home <home> --database <database> --back
 cloe local db drop --repo-map-home <home> --database <database> --backup-first --yes
 ```
 
-`drop` is backup-first only: RepoMap creates and verifies a dump, manifest,
+`drop` is backup-first only: Common Lore Index creates and verifies a dump, manifest,
 checksums, and restore note before dropping. There is no unbacked
 wipe/reset/clear/truncate operation. Dumps and manifests belong under
 `REPOMAP_HOME/backups`. Do not operate on host-installed or unrelated
@@ -247,7 +247,7 @@ production pgvector admission. D9-B remains separately proposed in
 ## Source Ingestion Routing
 
 Explicit, policy-approved source configs acquire non-folder artifacts into
-RepoMap-owned locations under the target root. Acquisition commands are
+Common Lore Index-owned locations under the target root. Acquisition commands are
 versioned acquisition-only surfaces: they report `graph_mutated=false`, never
 mutate final graph state or freshness, and are free of arbitrary
 model-selected URLs. Publication into a graph happens separately through the
@@ -276,10 +276,10 @@ treat MCP as a write surface.
 
 ## Container Image Safety
 
-Until RepoMap implements role/retention image labels and a repository-owned
+Until Common Lore Index implements role/retention image labels and a repository-owned
 cleanup command, remove only an exact image reference or ID created by the
 current authorized task, after proving no container references it. Do not use
-global prune or heuristic deletion of pre-existing RepoMap-like images. Treat
+global prune or heuristic deletion of pre-existing Common Lore Index-like images. Treat
 the long-lived deployment cluster and its images as protected unless the
 operator explicitly authorizes lifecycle work. See
 [Container Lifecycle Requirements](../../container-lifecycle-requirements.md)

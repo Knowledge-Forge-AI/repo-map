@@ -1,8 +1,8 @@
-# RepoMap Documentation Reference Policy
+# Common Lore Index Documentation Reference Policy
 
 ## Purpose
 
-This policy defines how RepoMap public-facing documentation refers to
+This policy defines how Common Lore Index public-facing documentation refers to
 development history when private development, private review control, and
 published source may use different Git histories.
 
@@ -33,7 +33,7 @@ into public-facing documentation.
 
 ## Repository Trust Model
 
-RepoMap uses or plans four distinct repository roles.
+Common Lore Index uses or plans four distinct repository roles.
 
 ### Private Development Repository
 
@@ -54,9 +54,9 @@ It is the planned durable home for private task bindings, review reports, and
 other control-plane records that need exact private commit identity. Detailed
 control-repository layout and migration remain separate operational work.
 
-### Future Public RepoMap Repository
+### Future Public Common Lore Index Repository
 
-A future public RepoMap repository may be created from curated accepted
+A future public Common Lore Index repository may be created from curated accepted
 development state. Its Git history may differ from `repo-map_dev`.
 
 The public repository's published source, public releases, and public tags or
@@ -71,12 +71,12 @@ state.
 
 Until the repository is actually public, documentation must describe it as
 preserved or intended for publication. Once public, it is the historical
-Apache-2.0 source reference. Current and future RepoMap development uses the
+Apache-2.0 source reference. Current and future Common Lore Index development uses the
 later licensing model recorded by ADR 0006.
 
 ## Authoritative Public Development Record
 
-RepoMap's authoritative public development record is semantic and
+Common Lore Index's authoritative public development record is semantic and
 source-backed. It consists of:
 
 - phase and task IDs;
@@ -214,7 +214,7 @@ The reference policy is:
 - do not use a private-development commit SHA;
 - do not claim the repository is public until it is actually public;
 - once public, treat it as the historical Apache-2.0 source reference;
-- state that current and future RepoMap development uses its later licensing
+- state that current and future Common Lore Index development uses its later licensing
   model where that distinction matters.
 
 No tag or commit SHA is required for the Apache-2.0 reference.

@@ -1,6 +1,6 @@
-# RepoMap Testing Standards
+# Common Lore Index Testing Standards
 
-RepoMap uses behavior-focused tests with explicit coverage gates. Tests should
+Common Lore Index uses behavior-focused tests with explicit coverage gates. Tests should
 protect contracts and boundaries, not reward ceremony.
 
 ## Suites
@@ -142,7 +142,7 @@ dependency-only runtime cache image and consumes the exact lowercase Docker
 Engine image configuration ID it returns. The cache is keyed by recipe, Docker
 architecture, exact local base identity, normalized project runtime
 dependencies, release inputs, and explicit smoke extras — never candidate
-source, phase, or run identity. The manager does not copy or install RepoMap;
+source, phase, or run identity. The manager does not copy or install Common Lore Index;
 the mounted checkout remains source authority.
 
 The configured base image is an exact immutable repository digest with an
@@ -180,7 +180,7 @@ tmpfs, not created and reclaimed afterward.
 
 Managed runtime-cache images use `repomap-test-runtime:*` plus the full
 `org.repomap.test.image.*` label contract. The manager retains at most two
-eligible RepoMap cache images, protects the requested image and every
+eligible Common Lore Index cache images, protects the requested image and every
 container-referenced image, and removes only positively owned stale IDs with
 `noprune` semantics and exact absence readback. A new manager-created cache is
 persistent accepted state, reported separately from unattributed images and
@@ -206,7 +206,7 @@ The run-wide boundary reports closed operation classes:
 `unmanaged_pull_count`. Canonical success requires zero product/build-profile
 and unmanaged operations, while each managed count is zero or one. A base
 pulled through the exact manager path is
-`managed_external_test_base_cache`, reported separately from managed RepoMap
+`managed_external_test_base_cache`, reported separately from managed Common Lore Index
 runtime caches, and is never removed by test GC or charged to the two-cache
 runtime retention bound.
 
@@ -220,7 +220,7 @@ limits, and the preserved evidence semantics are recorded in
 
 Integration and staging suites must use the MCP-RUNTIME3 containerized
 Postgres harness with `--pg-container-port 55433` inside the authenticated
-RepoMap DinD sandbox. The runner automatically dispatches every `int` and
+Common Lore Index DinD sandbox. The runner automatically dispatches every `int` and
 `staging` invocation across that boundary; `--sandbox` is a redundant
 compatibility assertion, not a stronger mode. Direct pytest collection under
 `src/test/int/python` refuses outside the authenticated sandbox before fixture
@@ -451,7 +451,7 @@ required hosted qualification claim.
 
 ## Hosted CI Current State
 
-RepoMap promotes through two long-lived logically protected branches. "Logical"
+Common Lore Index promotes through two long-lived logically protected branches. "Logical"
 is exact: private-operation policy is owned by the future JACA git broker, not by
 GitHub branch protection, rulesets, required GitHub reviews, a merge queue, or
 CODEOWNERS. None of those are configured, and "approval" throughout this section
@@ -497,7 +497,7 @@ updates a ref, enables auto-merge, or closes a pull request, and no workflow
 holds a write permission. Until JACA owns merging, the human operator is the
 temporary broker and decides what to merge from the gate's evidence.
 
-RepoMap operates five hosted CI lanes across the three cost tiers:
+Common Lore Index operates five hosted CI lanes across the three cost tiers:
 
 1. `repomap-static-analysis` (`.github/workflows/repomap-static-analysis.yml`) —
    the PR Fast lane.
@@ -845,7 +845,7 @@ The tested persistent-host prototype shape is:
 ```text
 persistent host / GitHub runner
         |
-        +-- one RepoMap-owned privileged integration sandbox container
+        +-- one Common Lore Index-owned privileged integration sandbox container
               |
               +-- pytest / integration process
               +-- scratch and sandbox-local process namespace

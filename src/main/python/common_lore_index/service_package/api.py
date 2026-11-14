@@ -67,7 +67,7 @@ def format_service_action_table(result: ServiceActionResult) -> str:
     """Format one bounded service-package action without private values."""
 
     values = result.as_dict()
-    lines = ["RepoMap coordinator service"]
+    lines = ["Common Lore Index coordinator service"]
     for name in (
         "action",
         "platform",

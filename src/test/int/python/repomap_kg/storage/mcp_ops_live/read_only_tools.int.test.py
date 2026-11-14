@@ -231,7 +231,7 @@ class StorageMcpReadOnlyToolsIntegrationTests(unittest.TestCase):
             "external:python.module:json", "python.module:pkg.lib.helper", "unknown:python.module:missing-module",
         ])
 
-        self.assertEqual(initialize_response["result"]["serverInfo"]["name"], "repomap-kg")
+        self.assertEqual(initialize_response["result"]["serverInfo"]["name"], "common-lore-index")
         expected_tools = [
             "repomap_status", "repomap_projects", "repomap_canonical_nodes", "repomap_canonical_edges",
             "repomap_explain_canonical_edge", "repomap_canonical_neighborhood", "repomap_ingested_sources",

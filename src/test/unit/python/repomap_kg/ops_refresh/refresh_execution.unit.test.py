@@ -289,7 +289,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
         self.assertEqual(payload["include_exclude"]["status"], "implemented")
         self.assertTrue(payload["safety"]["source_trees_mutated"] is False)
         self.assertTrue(payload["safety"]["destructive_db_actions"] is False)
-        self.assertIn("RepoMap ops refresh result", table)
+        self.assertIn("Common Lore Index ops refresh result", table)
         self.assertIn("repo-map | repo-map | repomap_repo_map | public-dev | success", table)
 
     def test_refresh_result_json_reports_partial_failures(self):

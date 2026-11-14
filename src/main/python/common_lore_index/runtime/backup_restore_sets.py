@@ -328,7 +328,7 @@ def format_coordinated_restore_table(result: CoordinatedRestoreResult) -> str:
     payload = result.to_jsonable()
     return "\n".join(
         (
-            f"RepoMap local DB restore-all: result={payload['result']}",
+            f"Common Lore Index local DB restore-all: result={payload['result']}",
             f"backup_id={payload['backup_id']}",
             f"restore_order={','.join(payload['restore_order'])}",
             (

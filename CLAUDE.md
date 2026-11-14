@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Claude-specific adapter for the RepoMap repository.
+Claude-specific adapter for the Common Lore Index repository.
 
 - `AGENTS.md` is the shared project canon. This file supplements it and does
   not weaken or override it; when the two appear to conflict, follow

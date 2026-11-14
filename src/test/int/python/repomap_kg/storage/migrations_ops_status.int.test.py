@@ -376,7 +376,7 @@ WHERE id = (SELECT max(id) FROM runs);
         self.assertIsNotNone(status_payload["graphs"][0]["latest_run_finished_at"])
         self.assertGreater(status_payload["graphs"][0]["raw_observations"], 0)
         self.assertEqual(table_status_exit_code, 0, table_status_stderr)
-        self.assertIn("RepoMap ops refresh status", table_status_stdout)
+        self.assertIn("Common Lore Index ops refresh status", table_status_stdout)
         self.assertIn(
             "repo-map | repo-map | repomap_test | public-dev | complete",
             table_status_stdout,

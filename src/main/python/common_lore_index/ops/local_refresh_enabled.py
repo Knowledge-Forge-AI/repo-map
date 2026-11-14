@@ -138,7 +138,7 @@ def format_local_refresh_enabled_table(
 ) -> str:
     payload = local_refresh_enabled_to_jsonable(config, outcomes)
     lines = [
-        "RepoMap ops refresh result",
+        "Common Lore Index ops refresh result",
         (
             "summary: command=refresh-enabled "
             f"storage={SQLITE_BACKEND} "

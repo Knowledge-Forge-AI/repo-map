@@ -1,8 +1,8 @@
-# RepoMap Phase Identity Policy
+# Common Lore Index Phase Identity Policy
 
 ## Purpose
 
-This policy defines the canonical identity model for RepoMap phases. It keeps
+This policy defines the canonical identity model for Common Lore Index phases. It keeps
 phase IDs usable as stable keys across public documentation, private
 manager/worker tasks, private review reports, status indexing, roadmap
 sequencing, future CI checks, and curated public Git history.
@@ -33,7 +33,7 @@ durable development record.
 ### Canonical Phase ID
 
 A canonical phase ID is the globally unique semantic identifier assigned to
-one RepoMap phase. It is independent of private commit identity, stable across
+one Common Lore Index phase. It is independent of private commit identity, stable across
 private/public history curation, and used consistently in the phase's primary
 status heading, roadmap assignment, active documentation, tasks, prompts, and
 new reports.
@@ -348,7 +348,7 @@ roadmap entries, aliases, and supporting-record fixtures.
 
 ## Registry Decision
 
-RepoMap does not need a separate machine-readable phase registry now. Primary
+Common Lore Index does not need a separate machine-readable phase registry now. Primary
 status documents, canonical roadmap records, this policy, and the scoped alias
 ledger provide sufficient tracked authority. A future scanner can derive
 canonical IDs deterministically from those records.

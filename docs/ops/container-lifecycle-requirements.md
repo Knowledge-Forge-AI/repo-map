@@ -1,9 +1,9 @@
-# RepoMap Container Lifecycle Requirements
+# Common Lore Index Container Lifecycle Requirements
 
 ## Purpose And Scope
 
 This document records the read-only SKILL-REVAMP2 audit and the requirements
-for distinguishable RepoMap clusters and safe image retention. It describes
+for distinguishable Common Lore Index clusters and safe image retention. It describes
 current behavior and future source/test work; it does not claim that lifecycle
 labels, stable image identity, or cleanup commands are implemented.
 
@@ -33,7 +33,7 @@ repomap-kg local down
   -> docker compose --project-name repomap-<home-hash> down
 
 repomap-kg local status --check-containers
-  -> inspect the expected container names and RepoMap runtime labels
+  -> inspect the expected container names and Common Lore Index runtime labels
 ```
 
 `local down` does not pass `--rmi` or `--volumes`. It removes the Compose
@@ -77,7 +77,7 @@ set even when the configured home is otherwise unchanged.
 - The standard integration Postgres harness uses a fixed upstream image,
   starts an exactly named `--rm` container with positive test labels, and
   removes that exact container and its anonymous volumes during teardown. It
-  does not build a RepoMap application image.
+  does not build a Common Lore Index application image.
 - Runtime integration/campaign paths that call `local up` with disposable
   homes inherit the home-derived project and image identities. Their
   `local down` closeout does not remove the exact application image or the
@@ -104,7 +104,7 @@ set even when the configured home is otherwise unchanged.
 
 ## Bounded Engine Observation
 
-The positive RepoMap-only inventory observed on 2026-07-29 found:
+The positive Common Lore Index-only inventory observed on 2026-07-29 found:
 
 - 42 `repomap-runtime-<home-hash>:latest` tags and 42 distinct image IDs;
 - 40 unreferenced runtime images and 2 images referenced by running
@@ -122,7 +122,7 @@ The selected images' virtual sizes sum to about 6.84 GiB. That sum is not
 unique disk consumption because images can share layers. Engine-wide aggregate
 BuildKit cache was about 63.74 GiB, about 60.82 GiB reclaimable. This proves
 that build cache is a separately material engine category, but the current
-labels do not support positive RepoMap-only cache attribution; no RepoMap
+labels do not support positive Common Lore Index-only cache attribution; no Common Lore Index
 cache-deletion claim is therefore made.
 
 ## Accumulation Classification
@@ -136,7 +136,7 @@ cache-deletion claim is therefore made.
 | Are old images held by stopped containers? | No in the observed old-image set. Forty were unreferenced; the stopped reference shared an active image. |
 | Is reliable ownership/retention labeling present? | Partial ownership only. Release and Compose labels identify image provenance, but role, retention, managed-owner, and source-revision labels are absent. |
 | Does a closeout path remove its built image? | The smoke suite does; `local down` and runtime integration/campaign closeout do not. |
-| Is BuildKit cache separately material? | Yes engine-wide, but RepoMap-only attribution is open because cache ownership labels are unavailable. |
+| Is BuildKit cache separately material? | Yes engine-wide, but Common Lore Index-only attribution is open because cache ownership labels are unavailable. |
 
 ## Current Safe Interim Procedure
 
@@ -147,7 +147,7 @@ exist:
    current authorized task.
 2. Before removal, prove that no container references that exact image.
 3. Do not use global prune, negative-label selection, name heuristics, or
-   deletion of pre-existing RepoMap-like images.
+   deletion of pre-existing Common Lore Index-like images.
 4. Treat the long-lived deployment cluster, its images, and its persistent
    data resources as protected unless the operator explicitly authorizes
    lifecycle work.
@@ -158,7 +158,7 @@ pre-existing inventory above.
 
 ## Target Cluster Identity Contract
 
-Every RepoMap-managed container, network, and volume should carry:
+Every Common Lore Index-managed container, network, and volume should carry:
 
 ```text
 org.repomap.managed=true
@@ -170,7 +170,7 @@ org.repomap.source.revision=<commit-or-build-id>
 
 Retain `org.repomap.runtime=true`, `org.repomap.home_hash`, and
 `org.repomap.component` through a compatibility interval. Do not use the
-reserved `com.docker.compose.*` namespace for RepoMap labels.
+reserved `com.docker.compose.*` namespace for Common Lore Index labels.
 
 Project-name policy:
 
@@ -241,7 +241,7 @@ A future repository-owned cleanup command must:
 - never invoke global prune.
 
 Build cache requires a separate positively attributable design. Do not include
-unlabeled cache records in normal RepoMap cleanup merely because engine-wide
+unlabeled cache records in normal Common Lore Index cleanup merely because engine-wide
 cache is large.
 
 Named-volume cleanup must be a separate explicit operation with the same
@@ -278,5 +278,5 @@ failure, and exact cleanup ownership.
 - Force-removing an image referenced by any container.
 - Treating UI virtual-size totals as unique reclaimed disk space.
 - Deleting all volumes for inactive project names.
-- Treating engine-wide BuildKit cache as RepoMap-owned without positive
+- Treating engine-wide BuildKit cache as Common Lore Index-owned without positive
   attribution.

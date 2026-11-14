@@ -1,6 +1,6 @@
-# RepoMap Dependency Standards
+# Common Lore Index Dependency Standards
 
-Dependencies should have a clear project benefit and should fit RepoMap's
+Dependencies should have a clear project benefit and should fit Common Lore Index's
 runtime, packaging, and safety model.
 
 ## Evaluation Priorities
@@ -22,7 +22,7 @@ Before adding a dependency, consider:
 - stability and release cadence;
 - maintainer organization and project health;
 - security posture and vulnerability history;
-- license compatibility with RepoMap;
+- license compatibility with Common Lore Index;
 - packaging and platform compatibility;
 - runtime footprint and transitive dependency risk;
 - compatibility with local containerized test and smoke environments;

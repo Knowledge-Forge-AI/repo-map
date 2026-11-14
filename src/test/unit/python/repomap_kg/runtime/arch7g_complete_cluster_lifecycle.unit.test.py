@@ -145,7 +145,7 @@ def test_release_cluster_backup_adapter_inspects_and_publishes_manifest(
     operator.authority_namespace = runtime_maintenance_namespace(
         Path("/repo-map-home"), host="127.0.0.1", port=5432
     )
-    operator.password = "synthetic-password"
+    operator.password = "xxxxxxxxxxxxxxxx"
     setattr(operator, "pg_dump_command", lambda database: (
         "/usr/bin/pg_dump",
         "-d",
@@ -379,5 +379,5 @@ def test_release_cluster_cli_table_reports_not_ready() -> None:
     with patch("common_lore_index.cli.release_cluster_status", return_value=payload) as status, redirect_stdout(stdout):
         exit_code = main(["ops", "release-cluster-status", "--repo-map-home", "/placeholder/home"])
     assert exit_code == 1
-    assert stdout.getvalue() == "RepoMap release cluster: result=not_ready graphs=2\n"
+    assert stdout.getvalue() == "Common Lore Index release cluster: result=not_ready graphs=2\n"
     status.assert_called_once_with("/placeholder/home")

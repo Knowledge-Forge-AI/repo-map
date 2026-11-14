@@ -1,4 +1,4 @@
-"""Ops control, coordinator, and job command dispatch for the RepoMap CLI."""
+"""Ops control, coordinator, and job command dispatch for the Common Lore Index CLI."""
 
 from __future__ import annotations
 

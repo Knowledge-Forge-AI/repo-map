@@ -72,7 +72,7 @@ class McpDomainReadbackIntegrationTests(unittest.TestCase):
         init_resp = responses[0]
         self.assertEqual(init_resp["id"], 1)
         init_server_info = json_object_field(response_result(init_resp), "serverInfo")
-        self.assertEqual(json_string_field(init_server_info, "name"), "repomap-kg")
+        self.assertEqual(json_string_field(init_server_info, "name"), "common-lore-index")
 
         tools_resp = responses[1]
         self.assertEqual(tools_resp["id"], 2)

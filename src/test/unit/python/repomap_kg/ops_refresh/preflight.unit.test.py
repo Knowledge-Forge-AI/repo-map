@@ -211,5 +211,5 @@ class OpsRefreshPreflightUnitTests(OpsRefreshUnitTestCase):
         self.assertEqual(payload["graph"]["files_included"], 1)
         self.assertFalse(payload["safety"]["storage_written"])
         self.assertFalse(payload["safety"]["source_acquisition"])
-        self.assertIn("RepoMap ops refresh preflight", table)
+        self.assertIn("Common Lore Index ops refresh preflight", table)
         self.assertIn("storage_written=false", table)

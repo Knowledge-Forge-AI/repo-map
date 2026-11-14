@@ -128,7 +128,7 @@ def test_mcp_dispatch_jsonrpc_handling() -> None:
     assert handle_jsonrpc_message({"method": "notifications/initialized"}) is None
     init_res = handle_jsonrpc_message({"id": 1, "method": "initialize"})
     assert init_res is not None
-    assert init_res["result"]["serverInfo"]["name"] == "repomap-kg"
+    assert init_res["result"]["serverInfo"]["name"] == "common-lore-index"
 
     unknown_res = handle_jsonrpc_message({"id": 2, "method": "unknown_method"})
     assert unknown_res is not None

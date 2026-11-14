@@ -1,4 +1,4 @@
-"""Argument parser construction for the RepoMap CLI."""
+"""Argument parser construction for the Common Lore Index CLI."""
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
     discover.add_argument("root", help="repository root to discover")
     discover.add_argument(
         "--profile",
-        help="path to an optional RepoMap project profile",
+        help="path to an optional Common Lore Index project profile",
     )
     discover.add_argument(
         "--jsonl",
@@ -123,7 +123,7 @@ def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
     identity = subparsers.add_parser(
         "identity",
         help="print stable project identity metadata",
-        description="Print stable RepoMap project identity metadata.",
+        description="Print stable Common Lore Index project identity metadata.",
     )
     identity.add_argument(
         "--json",

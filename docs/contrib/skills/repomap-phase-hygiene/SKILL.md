@@ -1,24 +1,24 @@
 ---
 name: repomap-phase-hygiene
-description: Use when planning, documenting, verifying, committing, amending, or reviewing RepoMap phases, ADRs, status exits, docs-only updates, source slices, test harness changes, test report work, smoke tests, or extended-phase exit audits.
+description: Use when planning, documenting, verifying, committing, amending, or reviewing Common Lore Index phases, ADRs, status exits, docs-only updates, source slices, test harness changes, test report work, smoke tests, or extended-phase exit audits.
 ---
 
-# RepoMap Phase Hygiene
+# Common Lore Index Phase Hygiene
 
 ## Overview
 
-RepoMap history is part of the project audit trail. Every phase commit should
+Common Lore Index history is part of the project audit trail. Every phase commit should
 name the phase, state scope and boundaries, and record verification in the
 commit body.
 
-This is a contributor/development skill. Operator/runtime RepoMap skills live
+This is a contributor/development skill. Operator/runtime Common Lore Index skills live
 under `docs/ops/skills/`; contributor skills live under
 `docs/contrib/skills/`. This skill is the sole owner of the commit-message
 contract and template; other guidance points here rather than repeating it.
 
 ## Commit Message Contract
 
-Use this shape for RepoMap phase commits:
+Use this shape for Common Lore Index phase commits:
 
 ```text
 PHASE_ID: short imperative summary
@@ -93,7 +93,7 @@ verification under `repo-map-testing-standards`, including affected tests,
 relevant compile/static checks, diff, and cached-diff checks. Hosted CI owns the
 routine promotion gates; a local staging or system gate remains available when
 the operator or accepted phase explicitly requires complete local evidence.
-Current PostgreSQL integration selections use RepoMap's containerized harness; do not
+Current PostgreSQL integration selections use Common Lore Index's containerized harness; do not
 fall back to host IPC or a developer's live database.
 
 Test harness phases may change `tools/run_tests.py`, test support packages,
@@ -135,7 +135,7 @@ or diagnostic proof. Route test and coverage provenance fields to
 
 ## ADR Template
 
-RepoMap ADRs normally use:
+Common Lore Index ADRs normally use:
 
 - `# ADR NNNN: Title`
 - `## Status`

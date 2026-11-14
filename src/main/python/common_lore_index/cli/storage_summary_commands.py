@@ -1,4 +1,4 @@
-"""Storage summary command handlers for the RepoMap CLI."""
+"""Storage summary command handlers for the Common Lore Index CLI."""
 
 from __future__ import annotations
 

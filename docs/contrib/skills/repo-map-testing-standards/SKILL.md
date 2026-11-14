@@ -1,9 +1,9 @@
 ---
 name: repo-map-testing-standards
-description: Use when selecting, running, documenting, or reviewing RepoMap scoped unit and integration tests, complete-suite requests, breadth disputes, smoke, compileall, docs-only, diff, or qualification verification.
+description: Use when selecting, running, documenting, or reviewing Common Lore Index scoped unit and integration tests, complete-suite requests, breadth disputes, smoke, compileall, docs-only, diff, or qualification verification.
 ---
 
-# RepoMap Testing Standards
+# Common Lore Index Testing Standards
 
 ## Suite Selection
 
@@ -145,7 +145,7 @@ Container-capable canonical runs report closed build/pull classes:
 product or build-profile builds, managed test-runtime builds, managed external
 base pulls, unmanaged builds, and unmanaged pulls. Product/build-profile and
 unmanaged counts must be zero; each managed count may be zero or one. A newly
-pulled exact Python base is reported separately from RepoMap runtime caches and
+pulled exact Python base is reported separately from Common Lore Index runtime caches and
 never consumes one of the two runtime-cache retention slots.
 
 Those zero-unmanaged requirements are canonical-run requirements. In an
@@ -251,7 +251,7 @@ Before any hosted trigger or remote write, follow the detailed
 - after capacity returns, recover only the latest exact review-ready candidate,
   without replaying superseded attempts.
 
-RepoMap operates five hosted CI lanes across three cost tiers:
+Common Lore Index operates five hosted CI lanes across three cost tiers:
 - `repomap-static-analysis` (PR Fast): one sequential aggregate that runs Ruff,
   Pyflakes, mypy, retained-Python ratchets, file-length, compileall, actionlint, zizmor, pip-audit,
   govulncheck, Semgrep, Betterleaks, MalSkanner, Prompt Defense Audit,

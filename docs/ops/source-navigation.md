@@ -6,8 +6,8 @@ authored findings, uncertainty and inert next checks. Loading it performs no
 graph or source reads; local rechecking uses the importing caller's root mapping.
 
 Read the fresh task handoff first. If it provides an owner or location, verify
-that location directly in the checkout. Use RepoMap only for unresolved owners
-or locations. Native symbol/file search remains available if RepoMap is absent,
+that location directly in the checkout. Use Common Lore Index only for unresolved owners
+or locations. Native symbol/file search remains available if Common Lore Index is absent,
 broken, unsupported or returns no usable lead; no demonstration query is required.
 
 For an already selected canonical node on a configured, enabled, MCP-visible

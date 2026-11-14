@@ -20,7 +20,7 @@ Describe the change and any relevant verification.
 
 - Hosted state (`AVAILABLE` / `CONSERVE` / `EXHAUSTED` / `UNKNOWN`):
 - Expected automatically triggered lanes:
-- Run IDs and RepoMap classifications, or not-requested reason:
+- Run IDs and Common Lore Index classifications, or not-requested reason:
 - Pending explicit staging/main-system gates:
 - [ ] No unapproved rerun, dispatch, cancellation, or trigger event was used.
 
@@ -50,7 +50,7 @@ create qualification.
 
 ## Contribution Terms
 
-- [ ] I agree to the RepoMap contribution terms in CLA.md.
+- [ ] I agree to the Common Lore Index contribution terms in CLA.md.
 - [ ] I have authority to submit this work under those terms.
 - [ ] I have read and followed `CONTRIBUTING.md`.
 - [ ] I have identified third-party material and preserved required notices.

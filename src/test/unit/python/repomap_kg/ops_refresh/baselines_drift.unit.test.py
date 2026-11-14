@@ -113,7 +113,7 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
             self.assertEqual(preflight_timestamped.read_text(), preflight_latest.read_text())
             self.assertEqual(json.loads(stored_latest.read_text())["command"], "graph-baseline")
             self.assertEqual(json.loads(preflight_latest.read_text())["command"], "refresh-preflight")
-            self.assertIn("RepoMap ops baseline save", table)
+            self.assertIn("Common Lore Index ops baseline save", table)
             self.assertIn("kind=stored", table)
             graph_summary.assert_called_once()
             self.assertEqual(graph_summary.call_args.kwargs["psql_command"], "/bin/psql")
@@ -159,7 +159,7 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
             self.assertFalse(dry_payload["safety"]["outside_baseline_root_deleted"])
             self.assertIn("status/baselines/repo-map/stored/20260701T000000Z.json", p0["candidate_path_displays"])
             self.assertNotIn(str(home), json.dumps(dry_payload))
-            self.assertIn("RepoMap ops baseline prune", dry_table)
+            self.assertIn("Common Lore Index ops baseline prune", dry_table)
             self.assertTrue(old_file.exists())
             self.assertTrue(latest_file.exists())
 

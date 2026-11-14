@@ -130,7 +130,7 @@ def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemS
     config = SystemTestConfig.create(
         timeout_seconds=1500, report_dir=tmp_path / "report", candidate_tree_sha="b" * 40,
         run_id=_active_run_id(), gate_kind="main-system", approval_id="pr-23", pr_number="23",
-        repository="Knowledge-Forge-AI/repo-map", approved_base_branch="main", approved_base_sha=BASE_SHA,
+        repository="Knowledge-Forge-AI/common-lore-index", approved_base_branch="main", approved_base_sha=BASE_SHA,
         approved_head_branch="staging", approved_head_sha="d" * 40, candidate_commit_sha="a" * 40,
         candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, execution_mode="hosted_qualification",
     )
@@ -161,7 +161,7 @@ def test_observe_and_assess_candidate_validates_gates_and_refuses_defects(monkey
         "postgres:16.15-trixie@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97")
     pkg = D12_CANDIDATE_PACKAGE_MANIFEST["amd64"]
     server_side = {p: f"postgres (PostgreSQL) {POSTGRES_RELEASE_VERSION}" for p in (SERVER, *CLIENTS)}
-    srv_env = {"POSTGRES_USER": "d12", "POSTGRES_DB": "d12", "POSTGRES_PASSWORD": "secret"}
+    srv_env = {"POSTGRES_USER": "d12", "POSTGRES_DB": "d12", "POSTGRES_PASSWORD": "xxxxxxxxxxxxxxxx"}
     avail = {"platform": "linux/amd64", "execution": "native"}
     with pytest.raises(ValueError, match="expected_libpq_version"):
         observe_and_assess_candidate(

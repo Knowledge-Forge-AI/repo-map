@@ -1,13 +1,13 @@
 ---
 name: repomap-mcp-configuration
-description: Use when configuring the read-only RepoMap MCP server, wiring the graph registry or legacy project registry, setting MCP server environment variables, or diagnosing project, graph, and default resolution for RepoMap MCP tools.
+description: Use when configuring the read-only Common Lore Index MCP server, wiring the graph registry or legacy project registry, setting MCP server environment variables, or diagnosing project, graph, and default resolution for Common Lore Index MCP tools.
 ---
 
-# RepoMap MCP Configuration
+# Common Lore Index MCP Configuration
 
 ## Overview
 
-Configure RepoMap MCP as a read-only query surface over RepoMap graph
+Configure Common Lore Index MCP as a read-only query surface over Common Lore Index graph
 databases that local ops maintain outside MCP. This skill is the sole owner
 of the public MCP configuration shape, registry and environment settings,
 and resolution behavior. It does not own the query procedure
@@ -225,4 +225,4 @@ Restart or refresh the MCP-capable agent session if tool discovery is stale,
 then run the `repomap-mcp-smoke-test` procedure. This skill intentionally
 does not duplicate the smoke checklist. If tools are missing, distinguish
 configuration, session exposure, approval policy, storage connection, and
-RepoMap query failures.
+Common Lore Index query failures.

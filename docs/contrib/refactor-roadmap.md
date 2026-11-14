@@ -1,8 +1,8 @@
-# RepoMap Refactor Roadmap
+# Common Lore Index Refactor Roadmap
 
 REF2 is the readability and refactor architecture checkpoint. It does not
 change production code. It records the current pressure points and defines an
-incremental, behavior-preserving path toward a more comprehensible RepoMap code
+incremental, behavior-preserving path toward a more comprehensible Common Lore Index code
 base.
 
 This roadmap follows:
@@ -14,7 +14,7 @@ This roadmap follows:
 
 ## Goals
 
-RepoMap should become easier for human contributors and AI coding agents to
+Common Lore Index should become easier for human contributors and AI coding agents to
 understand without losing its current behavior.
 
 The refactor goals are:
@@ -28,7 +28,7 @@ The refactor goals are:
   readback behavior unless a later phase explicitly accepts a behavior change;
 - keep Python idiomatic, functional where appropriate, and light on ceremony;
 - avoid generic service/repository layers and abstract class hierarchies that
-  do not solve a concrete RepoMap problem.
+  do not solve a concrete Common Lore Index problem.
 
 ## Non-Goals
 
@@ -545,7 +545,7 @@ Acceptance:
 Risk: low if ADR-only.
 
 REF9 implementation note: REF9 added ADR 0035, "Dependency Evaluation After
-Initial Refactor Phases." The ADR keeps RepoMap stdlib/local-code first after
+Initial Refactor Phases." The ADR keeps Common Lore Index stdlib/local-code first after
 REF3-REF8, adds no dependencies, leaves package metadata and lockfiles
 untouched, and defers every evaluated category unless a later dedicated ADR or
 explicit phase proves a concrete performance, correctness, maintenance, or
@@ -1613,7 +1613,7 @@ configured graph databases.
 
 LIVE-OPS3 implementation note: LIVE-OPS3 fixes the live smoke diagnostic gap
 where graph readback after an authorized database drop could report a missing
-graph database while also claiming no running RepoMap-owned Postgres container
+graph database while also claiming no running Common Lore Index-owned Postgres container
 was available. The ops psql error path now classifies PostgreSQL
 `database ... does not exist` failures separately and returns a sanitized
 missing-or-not-initialized graph database diagnostic without appending runtime
@@ -1659,7 +1659,7 @@ LIVE-OPS6 implementation note: LIVE-OPS6 adds the bounded high-level
 smoke needed separate dump TOC inspection to validate backup contents.
 `backup-inspect` reuses manifest/checksum verification, performs bounded
 custom-format dump TOC listing through the existing owned-runtime boundary, and
-reports public-safe table counts, table-data counts, expected RepoMap table
+reports public-safe table counts, table-data counts, expected Common Lore Index table
 presence, and explicit safety booleans without exposing raw dump contents,
 local paths, environment details, or raw Docker/Postgres command arrays.
 `backup-info` remains manifest-only with `dump_contents_read=false`. The phase
@@ -1689,7 +1689,7 @@ test-runner policy, configured local graphs, or real graph databases.
 
 LIVE-HARDEN1 implementation note: LIVE-HARDEN1 adds one CLI-level lifecycle
 smoke chain in `src/test/int/python/repomap_kg/test_cli.int.test.py` using a
-synthetic temporary RepoMap home, a synthetic database name, and mocked
+synthetic temporary Common Lore Index home, a synthetic database name, and mocked
 lifecycle command runners. The smoke chains local setup, backup-first local DB
 drop, bounded `backup-inspect` JSON/table output, and `backup-info` readback
 against the produced synthetic backup artifact. It asserts high-level
@@ -1751,7 +1751,7 @@ LIVE-FLAKES0, not a code/test phase unless the flakes run finds a concrete
 missing hardening gap.
 
 LIVE-FLAKES0 smoke note: LIVE-FLAKES0 ran the bounded live smoke against the
-local private `flakes` graph through high-level RepoMap CLI, MCP, and
+local private `flakes` graph through high-level Common Lore Index CLI, MCP, and
 lifecycle/status surfaces. The phase performed read-only registry/runtime
 checks, a graph-scoped refresh preflight, one graph-scoped `flakes` refresh,
 post-refresh status/summary readback, bounded domain/search/neighborhood
@@ -1830,7 +1830,7 @@ behavior, so the next phase should be LIVE-OPS10 to restart/reload or otherwise
 verify the live MCP connector runtime and rerun only the stale connector checks
 before NIX-SUMMARY0 proceeds.
 
-LIVE-OPS10 verification note: LIVE-OPS10 confirmed the already-running RepoMap
+LIVE-OPS10 verification note: LIVE-OPS10 confirmed the already-running Common Lore Index
 MCP connector was stale relative to the approved checkout: exact MCP server
 processes predated the current commit and still failed legacy
 `project="flakes"` fallback with the old internal-Postgres-host behavior, while
@@ -1846,7 +1846,7 @@ safe connector lifecycle/version-reporting path before retrying the
 connector-only checks and before NIX-SUMMARY0 proceeds.
 
 LIVE-OPS11 lifecycle note: LIVE-OPS11 documented the safe connector lifecycle
-procedure instead of changing MCP schemas. The current RepoMap MCP surface
+procedure instead of changing MCP schemas. The current Common Lore Index MCP surface
 already reports package/server version through existing status/initialize
 paths, but that is not enough to prove commit freshness for a long-running
 connector when the package version is unchanged. Future connector-only smokes
@@ -1858,8 +1858,8 @@ fallback, split a new LIVE-OPS source phase; if it passes, proceed to
 LIVE-FLAKES2 and then NIX-SUMMARY0.
 
 LIVE-FLAKES2 validation note: LIVE-FLAKES2 attempted the connector-only fresh
-validation, but the current session exposed RepoMap MCP tool metadata while the
-underlying connector transport remained closed and no RepoMap MCP server process
+validation, but the current session exposed Common Lore Index MCP tool metadata while the
+underlying connector transport remained closed and no Common Lore Index MCP server process
 was running. No graph-id, legacy fallback, or observation privacy payloads could
 be read through the live connector, and the phase intentionally skipped
 `include_raw=true` observation readback. The result is an operational connector
@@ -1887,7 +1887,7 @@ The phase stopped immediately and did not run refresh status, legacy fallback,
 observation search, `include_raw=true`, discovery, refresh, database/container
 commands, source/test changes, or raw private output capture. The result
 remains an unresolved operational connector lifecycle gap rather than a
-RepoMap product behavior verdict. Unless live connector validation must be
+Common Lore Index product behavior verdict. Unless live connector validation must be
 unblocked first, proceed to NIX-SUMMARY0 using graph-id/source-checkout
 validation as sufficient design context.
 
@@ -3087,7 +3087,7 @@ parity/ordering coverage, pause for more timing/parity data, or improve
 explicit driver connection/error coverage.
 
 PSYCOPG16 architecture note: PSYCOPG16 pivots the Psycopg pilot from ad hoc
-readback-driver helpers toward a formal PostgreSQL connector facade. RepoMap
+readback-driver helpers toward a formal PostgreSQL connector facade. Common Lore Index
 should maintain two official JSON-readback connector plugins: `psql` for the
 existing custom psql-process path and `psycopg` for the Psycopg path. Storage
 callers should continue to use one facade entry point while SQL builders,
@@ -4824,7 +4824,7 @@ preflight and two complete refreshes produced stable latest-run counts, stored
 and preflight baselines, and a no-drift result without modifying its source
 tree. GO2 adds no dependency, Go module, executable, canonical Go model,
 schema change, or target execution. The epic is stopped before GO3 for the
-mandatory decision on the recommended RepoMap-owned standard-library Go parser
+mandatory decision on the recommended Common Lore Index-owned standard-library Go parser
 helper and platform packaging boundary.
 
 GO3 implementation note: GO3 adds the authorized standard-library-only Go
@@ -4894,7 +4894,7 @@ package, type, alias, function, method, constant, and variable identities with
 raw-evidence linkage, expected-duplicate accounting, bounded collision errors,
 and evidence-only unresolved syntax. Exact ownership, bounded local imports,
 module requirements/replacements, workspace use, and defined receiver
-ownership become canonical edges. Docker Language Server plus the RepoMap
+ownership become canonical edges. Docker Language Server plus the Common Lore Index
 runner and controller dogfood graphs produced stable collision-free canonical
 outputs across unchanged repeats, saved stored/preflight baselines, and no
 drift. GO10 should be a dedicated docs-only inventory and phase-map assessment
@@ -4904,8 +4904,8 @@ claim or broader extraction correction.
 GO10 assessment note: GO10 inventories the five added protected dogfood
 repositories without running extraction or changing source. Caddy has 322 Go
 files and 20 build-tagged files; gorush has 63 Go files; recipes has 385 Go
-files across 91 module roots; the RepoMap controller has 82 Go files across
-two module roots; and the RepoMap runner has 77 Go files across two module
+files across 91 module roots; the Common Lore Index controller has 82 Go files across
+two module roots; and the Common Lore Index runner has 77 Go files across two module
 roots. All five worktrees remained clean. GO11 should harden module, workspace,
 package, and bounded local-import resolution before formal evaluation phases,
 with recipes as the primary nested-module structure fixture.
@@ -4930,8 +4930,8 @@ GO13 remains the performance and incremental-refresh phase.
 
 GO13 assessment note: a bounded uncommitted JSONL cache reused all unchanged
 Go helper observations and preserved byte-identical raw and canonical output,
-but it demonstrated no material improvement on Docker Language Server, RepoMap
-runner, RepoMap controller, or recipes. The trial was removed and no
+but it demonstrated no material improvement on Docker Language Server, Common Lore Index
+runner, Common Lore Index controller, or recipes. The trial was removed and no
 source, test, CLI, schema, identity, or graph contract changed. Full refresh
 remains authoritative. Material incremental refresh would require a language-
 neutral transactional storage design for content-addressed extraction
@@ -4941,15 +4941,15 @@ defer that storage architecture and proceed to GO14 full-refresh evaluation,
 or authorize a separate incremental-storage architecture phase first.
 
 GO14 evaluation note: GO13 Deferral A is accepted, and deterministic full
-refresh remains the only supported refresh mode. RepoMap runner passes formal
+refresh remains the only supported refresh mode. Common Lore Index runner passes formal
 evaluation with 77 Go files across two source modules, 42,324 Go observations,
 811 canonical Go nodes, 1,036 canonical Go edges, 2,649 evidence links, 61
 expected duplicate evidence records, zero identity collisions, and stable
 repeated full refreshes. Fresh stored/preflight baselines report no drift. No
 runner-specific correction phase is required; GO15 should formally evaluate
-RepoMap controller under the same full-refresh contract.
+Common Lore Index controller under the same full-refresh contract.
 
-GO15 evaluation note: RepoMap controller passes formal evaluation with 82 Go
+GO15 evaluation note: Common Lore Index controller passes formal evaluation with 82 Go
 files across two source modules, 38,874 Go observations, 777 canonical Go
 nodes, 1,021 canonical Go edges, 2,432 evidence links, 72 expected duplicate
 evidence records, zero identity collisions, and byte-stable direct plus stable
@@ -5019,7 +5019,7 @@ GO22 correction note: full refresh now lazily adapts raw and canonical storage
 rows and streams deterministic SQL through bounded psql stdin transfer while
 retaining one `BEGIN`/`COMMIT` transaction. Byte-equivalence, one-shot iterator,
 bounded output, cancellation, mixed-language, large generated population, and
-failure-injection rollback tests pass. RepoMap runner maximum RSS fell to
+failure-injection rollback tests pass. Common Lore Index runner maximum RSS fell to
 approximately 229 MiB and recipes to approximately 446 MiB, with stable repeat
 counts and no baseline drift. Argo CD remained PostgreSQL CPU-bound for more
 than two hours without completing; rollback remained empty, its dedicated
@@ -5030,11 +5030,11 @@ full-refresh parity and any set-based storage redesign are deferred outside the
 Go epic. GO23 should close the epic with that support boundary.
 
 GO23 closure note: the Go extraction epic is complete. The accepted contract is
-the RepoMap-owned standard-library helper, versioned bounded JSONL protocol,
+the Common Lore Index-owned standard-library helper, versioned bounded JSONL protocol,
 syntax-honest raw extraction, Model A repository-scoped source identities,
 deterministic evidence-linked canonicalization, and forced-full transactional
-refresh. Formal dogfood parity covers Docker Language Server, RepoMap runner,
-RepoMap controller, recipes, gorush, and Caddy. Argo CD direct extraction is
+refresh. Formal dogfood parity covers Docker Language Server, Common Lore Index runner,
+Common Lore Index controller, recipes, gorush, and Caddy. Argo CD direct extraction is
 stable but storage-backed dogfood is retired; Terraform and Kubernetes formal
 parity are not claimed. High-scale/incremental storage, vendored identity,
 dependency-backed type analysis, and release-platform binary packaging require
@@ -5089,7 +5089,7 @@ passed. Each initially absent dedicated database was bootstrapped, exercised
 through a verified backup-first drop, reinitialized from current source
 migrations, preflighted, refreshed, summarized, baselined, and checked for
 immediate stored and preflight drift. All six latest runs completed with zero
-diagnostics, every actual drop had a verified backup, and no RepoMap action
+diagnostics, every actual drop had a verified backup, and no Common Lore Index action
 mutated a source root. Concurrent controller and flakes development was
 preserved and classified separately through operation-scoped snapshots and
 preflight drift. Backup metadata inspection passed, but live backup content
@@ -5235,7 +5235,7 @@ streams in `up_local_runtime`. LOCAL17 should isolate runtime child output with
 red-green coverage before lifecycle matrix completion resumes.
 
 LOCAL17 runtime stream correction note: runtime up and down now discard child
-stdout and stderr before emitting RepoMap-owned JSON or table results, and
+stdout and stderr before emitting Common Lore Index-owned JSON or table results, and
 nonzero child exits become one fixed exit-code diagnostic with suppressed
 context. Three focused cases failed before the correction; 22 runtime tests, 24
 broader focused tests, two actual JSON/table restart cycles, unchanged database
@@ -5646,7 +5646,7 @@ Any dependency proposal must answer:
 - What problem does it solve better than small local code?
 - Does it improve performance, readability, or maintenance?
 - Is it stable and maintained?
-- Is it compatible with RepoMap packaging, smoke, CLI, MCP, storage, and test
+- Is it compatible with Common Lore Index packaging, smoke, CLI, MCP, storage, and test
   environments?
 - What transitive and operational risk does it add?
 
@@ -5695,7 +5695,7 @@ ASYNC9 adds a foreground-only local coordinator launch command and an explicit
 coordinator-backed `refresh-graph` mode. Direct execution remains the default.
 Coordinator clients supply only a configured graph ID and durable idempotency identity;
 the service derives its authenticated endpoint, executable authority, and dedicated
-control-database identity from an owner-private RepoMap home. Launch checks an existing
+control-database identity from an owner-private Common Lore Index home. Launch checks an existing
 compatible control schema and never initializes or migrates it. Disposable integration
 proves configured refresh, terminal replay, single publication, bounded startup refusal,
 and endpoint cleanup. Explicit control-database lifecycle remains deferred to ASYNC10.
@@ -5772,10 +5772,10 @@ current-user identity, least-privilege intent, manual run, bounded end, deletion
 repeat-delete refusal, and private temporary-directory cleanup pass on the Windows
 Server 2025 runner. The runner is an elevated administrator in a non-interactive
 session, so these facts do not prove ordinary-user installation or removal. `psql.exe`
-is unavailable, so no RepoMap control-database or credential-file canary is claimed.
+is unavailable, so no Common Lore Index control-database or credential-file canary is claimed.
 
 No native Windows background adapter is selected. Task Scheduler remains a bounded
-future candidate only after standard-user and real RepoMap/PostgreSQL evidence proves
+future candidate only after standard-user and real Common Lore Index/PostgreSQL evidence proves
 the current-user contract. Windows Service remains deferred because it requires an
 explicit service-account, profile, credential, session-zero, ACL, and elevated
 machine-authority design. Windows foreground coordinator operation remains supported
@@ -6263,7 +6263,7 @@ the direct-main commit, push, report, parity check, and fresh-cluster preflight.
 
 ### SCALE9K0 — local runtime image dependency packaging
 
-Before SCALE9K static preflight, the generated RepoMap server image copied the
+Before SCALE9K static preflight, the generated Common Lore Index server image copied the
 project source without installing its already-declared runtime dependencies.
 SCALE9K0 packages the image through existing project metadata, retaining one
 dependency authority and adding no dependency declaration, lockfile, schema,
@@ -6363,7 +6363,7 @@ are not accepted as a substitute for exact storage-readback evidence.
 No attempt, signal, reset, cleanup, rebuild, publication, receipt, parity,
 baseline, drift, performance, SCALE-CLOSE, or GO24 result is claimed. The next
 selected phase is SCALE9O, a bounded lifecycle-readback availability diagnosis
-using public-safe synthetic evidence and RepoMap-owned lifecycle commands. It
+using public-safe synthetic evidence and Common Lore Index-owned lifecycle commands. It
 must not authorize a protected retry or state mutation until that boundary is
 resolved. The unchanged-repeat phase remains deferred.
 
@@ -6380,7 +6380,7 @@ rollback, or source evidence.
 
 No protected child, signal, backup, reset, cleanup, rebuild, or retry occurred.
 No publication, parity, baseline, drift, performance, SCALE-CLOSE, or GO24
-claim is made. The next selected phase is SCALE9P, a bounded RepoMap-owned
+claim is made. The next selected phase is SCALE9P, a bounded Common Lore Index-owned
 lifecycle-readback topology correction with public-safe synthetic evidence
 before any lifecycle mutation or protected retry. The unchanged-repeat phase
 remains deferred.
@@ -7611,7 +7611,7 @@ active backend-supervision correction; SCALE29 remains prohibited.
 
 ARCH8 is complete. A closed public-safe acceptance catalog passes the complete
 cross-phase lifecycle, publication, recovery, compatibility, privacy,
-packaging, and measurement evidence. Small synthetic, mixed fixture, RepoMap
+packaging, and measurement evidence. Small synthetic, mixed fixture, Common Lore Index
 self-host, and explicitly public full-repository rungs pass deterministic static
 extraction; the public full-repository rung also passes repeated
 receipt-bearing publication with equal bounded counts. No protected target was

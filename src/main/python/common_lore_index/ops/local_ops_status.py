@@ -94,7 +94,7 @@ def format_local_config_status_table(
         by_severity[diagnostic["severity"]] = by_severity.get(diagnostic["severity"], 0) + 1
     storage_status = payload["storage_status"]
     lines = [
-        "RepoMap ops config status",
+        "Common Lore Index ops config status",
         f"valid: {bool_text(payload['valid'])}",
         f"config_home: {payload['config_home'] or '[single-file-deprecated]'}",
         "config_files: " + ", ".join(payload["config_files"]),
@@ -135,7 +135,7 @@ def format_local_graph_registry_table(
 ) -> str:
     payload = local_graph_registry_status_to_jsonable(config, readiness=readiness)
     lines = [
-        "RepoMap ops graph registry",
+        "Common Lore Index ops graph registry",
         (
             "graphs: "
             f"total={payload['graph_count']} "

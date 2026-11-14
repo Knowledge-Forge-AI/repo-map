@@ -229,7 +229,7 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         )
         self.assertIsNotNone(initialized)
         assert initialized is not None
-        self.assertEqual(initialized["result"]["serverInfo"]["name"], "repomap-kg")
+        self.assertEqual(initialized["result"]["serverInfo"]["name"], "common-lore-index")
 
         self.assertIsNone(
             handle_jsonrpc_message(

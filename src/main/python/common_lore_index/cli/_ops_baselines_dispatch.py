@@ -1,4 +1,4 @@
-"""Ops baseline, drift, server memory, and policy dogfood dispatch for RepoMap CLI."""
+"""Ops baseline, drift, server memory, and policy dogfood dispatch for Common Lore Index CLI."""
 
 from __future__ import annotations
 

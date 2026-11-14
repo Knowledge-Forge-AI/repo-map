@@ -55,7 +55,7 @@ class GraphSchemaUpgradeResult:
 def format_graph_schema_upgrade_table(result: GraphSchemaUpgradeResult) -> str:
     payload = result.to_jsonable()
     lines = [
-        f"RepoMap graph schema upgrade: result={payload['result']}",
+        f"Common Lore Index graph schema upgrade: result={payload['result']}",
         f"schema_before={payload['schema_before']}",
         f"schema_after={payload['schema_after']}",
         f"backup_id={payload['backup_id']}",

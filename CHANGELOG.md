@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to RepoMap will be documented in this file.
+All notable changes to Common Lore Index will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
@@ -11,38 +11,54 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `0.1.0` or later will be the earliest package-manager publication line.
 - `main` represents released public versions.
 - Public `staging` is the prospective next-version branch; release promotions to `main` are squash merges where each resulting commit represents one version release.
-- Exception for v0.0.3 only: `main` is fast-forwarded to the exact qualified staging commit so that it keeps the history required by the author-correction proof ([ADR 0086](docs/adr/2026/10/0086-preview-003-staging-ancestry.md)). Later releases return to squash merges.
+- Exception for v0.0.3 and v0.0.4: `main` is fast-forwarded to the exact qualified staging commit so that it keeps the history required by the author-correction and forward lineage proofs ([ADR 0086](docs/adr/2026/10/0086-preview-003-staging-ancestry.md), [ADR 0195](docs/adr/2026/11/0195-common-lore-index-preview004-identity.md)). Later releases return to squash merges unless a separate lineage-safe exception is approved.
 
 ## [Unreleased]
 
-### Changed
-- Prepare CLOE's coordinated installed ownership while retaining the current
-  distribution, imports and command. Keep migration catalogs under one owner
-  and freeze their historical identity/checksum prefix.
-- Select recognizable default homes without moving data: new `~/.cloe`, safe
-  legacy fallback and refusal of remaining unrecognized or unsafe candidates.
-  Fresh default setup uses CLOE filenames; explicit custom-home behavior remains.
-- Correct CLI identity's stale licence string to the existing AGPL-3.0-or-later
-  licence. Preserve its keys and the remaining current identity values.
+### Prospective v0.0.4: first Common Lore Index preview
 
-## [0.0.3] - 2026-10-22
+- Complete current repository, package, contributor and operator branding as
+  Common Lore Index (CLOE); the public repository is
+  [common-lore-index](https://github.com/Knowledge-Forge-AI/common-lore-index).
+- Coordinate version 0.0.4 across source, packaging, root editable lock metadata
+  and export checks. Keep `cloe`/`common-lore-index` primary commands and finite
+  legacy launch/migration compatibility through v0.1.x.
+- Advertise the canonical MCP server identity while preserving wire tool names,
+  schemas, read-only behavior and existing storage/service ownership.
+- Carry forward the accumulated retrieval/navigation and resource-governance
+  milestone work. Full remaining-roadmap and platform/image/scientific admission
+  stay separately bounded; see the roadmap for actual workstream acceptance.
+- Refresh the single verified Debian Trixie linux-libc-dev builder artifact from
+  6.12.116-1 to 6.12.117-1. Preserve exact manifest/hash refusal and dynamic linking.
+- Backfill annotated tags and GitHub prerelease entries for the three existing
+  [RepoMap source previews](docs/releases/repomap-previews.md).
 
-Public source preview. Like earlier previews, it is not published to any package
-manager or registry. The promotion creates no tag. Release evidence:
-[preview v0.0.3 notes](docs/preview-v0.0.3.md).
+The [v0.0.4 notes](docs/preview-v0.0.4.md) remain prospective until current
+hosted qualification passes and the operator-authorized promotion is completed.
 
-### Release qualification
-- Hosted release-qualification run 59 (attempt 1) executed and passed all eight jobs on the exact staging candidate merged with the `main` base: source and export policy, pre-review static checks, unit tests, the staging integration gate, the main system gate, CodeQL for Go and for Python, and SBOM/vulnerability scanning.
-- Unit coverage was 93.64% lines and 87.58% branches. Integration coverage was 89.94% lines and 81.85% branches. Both clear the unchanged hard gates of 85/85 (unit) and 80/80 (integration). The separate 82% integration branch target was not reached.
-- The run qualifies the core profile only. The optional pgvector profile was not part of this hosted run.
+## [0.0.3] - 2026-10-29
+
+Final RepoMap public source preview at
+`5ad00d162ad8a04430874275246a53227578c533`, promoted through PR13 after
+[CI87 attempt1](https://github.com/Knowledge-Forge-AI/common-lore-index/actions/runs/40779161422).
+All nine jobs and retained same-attempt staging/system contracts passed. Unit
+coverage 87.9763%/87.6070% and measured integration 90.1658%/82.3417% cleared hard
+85/85 and 80/80 floors and the requested two-point margins. Core qualification
+does not admit optional pgvector, other platforms or live deployment.
+
+This final closeout follows the earlier interim 2026-10-22 promotion recorded in
+the [historical note](docs/preview-v0.0.3.md). The exact final commit, source tree
+and backfilled tag/release are reconciled in the
+[historical release index](docs/releases/repomap-previews.md).
 
 ### Changed
 - Restore driver-free SQLite startup while preserving explicit PostgreSQL custody.
-- Correct steward author metadata on public main and staging with an authenticated proof.
-- Update the steward contact address and coherent preview package/export metadata.
-- Retain extension-restore and packaging checks without changing debt or coverage ceilings.
+- Correct steward author metadata on public main and staging with authenticated proof.
+- Update contact/export metadata and extension-restore/packaging checks.
+- Qualify diagnostic native AMD/system execution and retain informational
+  handling of inherited Debian issues, without weakening project guards.
 
-## [0.0.2] - Unreleased
+## [0.0.2] - 2026-10-08
 
 ### Added
 - Consolidated single release qualification workflow model (`repomap-release-qualification.yml`) with closed CI topology verification.

@@ -64,7 +64,7 @@ class OpsRefreshStatusUnitTests(OpsRefreshUnitTestCase):
             "portable-worker-v1",
         )
         self.assertNotIn("portable_stage_id", payload["graphs"][0]["publication"])
-        self.assertIn("RepoMap ops refresh status", table)
+        self.assertIn("Common Lore Index ops refresh status", table)
         self.assertIn("repo-map | repo-map | repomap_repo_map | public-dev | complete", table)
 
     def test_live_ops9_refresh_status_json_exposes_latest_run_consistency(self):

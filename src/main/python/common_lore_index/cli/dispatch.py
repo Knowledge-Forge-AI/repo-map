@@ -1,4 +1,4 @@
-"""Command dispatch for the RepoMap CLI.
+"""Command dispatch for the Common Lore Index CLI.
 
 This module owns command-selection control flow while command implementation
 objects remain on ``common_lore_index.cli`` for compatibility with existing imports and

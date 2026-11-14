@@ -28445,6 +28445,611 @@
       ],
       "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
       "test_sha256": "55add33f4978236519d4f2db36b28b5ade55b95ed4b06050db661a9e90d9d75d"
+    },
+    {
+      "fingerprint": "4dab36f56016f6963401c5769ec80dec5ddea132166d5644dbf14107e6f6463c",
+      "id": "cloe.preview004.cloe.ci99repair1.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise39.cli.py.run_module_entrypoint",
+      "kind": "run_module",
+      "owner": "src/test/support/python/repomap_test_support/cli.py",
+      "owner_sha256": "0d045b9e3c0bea197536dc48a3bd12ac79283e613d6732464d0b458275d0cd66",
+      "parameters": {
+        "module": "common_lore_index",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "cloe.ci99repair1.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise39.cli.py.run_module_entrypoint",
+      "symbol": "run_module_entrypoint",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        },
+        {
+          "module": "common_lore_index.__main__",
+          "path": "src/main/python/common_lore_index/__main__.py",
+          "sha256": "62aa9eb8cc38fe4d7a926ef5353ba4799ed147ccdd3de9f9fcb843fc1f4ab94b",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
+      "test_sha256": "2cdc764287185a69c83ee16434e852d68b45d5dba576cba1280c1ac1c634037f"
+    },
+    {
+      "fingerprint": "4dab36f56016f6963401c5769ec80dec5ddea132166d5644dbf14107e6f6463c",
+      "id": "cloe.preview004.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.fix10.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "kind": "run_module",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "7e457e95e5f22faff6a340035885a1bf995696e29a58d2b47a6792b7e742db24",
+      "parameters": {
+        "module": "common_lore_index",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.fix10.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "symbol": "CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        },
+        {
+          "module": "common_lore_index.__main__",
+          "path": "src/main/python/common_lore_index/__main__.py",
+          "sha256": "62aa9eb8cc38fe4d7a926ef5353ba4799ed147ccdd3de9f9fcb843fc1f4ab94b",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "7e457e95e5f22faff6a340035885a1bf995696e29a58d2b47a6792b7e742db24"
+    },
+    {
+      "fingerprint": "4dab36f56016f6963401c5769ec80dec5ddea132166d5644dbf14107e6f6463c",
+      "id": "cloe.preview004.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.fix10.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "kind": "run_module",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "7e457e95e5f22faff6a340035885a1bf995696e29a58d2b47a6792b7e742db24",
+      "parameters": {
+        "module": "common_lore_index",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.fix10.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "symbol": "CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        },
+        {
+          "module": "common_lore_index.__main__",
+          "path": "src/main/python/common_lore_index/__main__.py",
+          "sha256": "62aa9eb8cc38fe4d7a926ef5353ba4799ed147ccdd3de9f9fcb843fc1f4ab94b",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "7e457e95e5f22faff6a340035885a1bf995696e29a58d2b47a6792b7e742db24"
+    },
+    {
+      "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+      "id": "cloe.preview004.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.0.hosted_ci_repair1",
+      "kind": "spec_from_file_location",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "common_lore_index",
+        "target_path": "src/main/python/common_lore_index/__init__.py",
+        "target_sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.0.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712"
+    },
+    {
+      "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+      "id": "cloe.preview004.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.1.hosted_ci_repair1",
+      "kind": "module_from_spec",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "common_lore_index",
+        "target_path": "src/main/python/common_lore_index/__init__.py",
+        "target_sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.1.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712"
+    },
+    {
+      "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+      "id": "cloe.preview004.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.2.hosted_ci_repair1",
+      "kind": "modules",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "common_lore_index",
+        "target_path": "src/main/python/common_lore_index/__init__.py",
+        "target_sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.2.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712"
+    },
+    {
+      "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+      "id": "cloe.preview004.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.3.hosted_ci_repair1",
+      "kind": "exec_module",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "common_lore_index",
+        "target_path": "src/main/python/common_lore_index/__init__.py",
+        "target_sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise41.base_package_import.3.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "65d9e4be80d5ffb58ad887c1cd60f52fa89e70b05dbdcbab6157e49e080f8114",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "6bc3d14982bb1ec98d8cd93b12aa8679497d3fab339d01ee3fc8cb5b6fff6712"
+    },
+    {
+      "fingerprint": "7b44a9a7b5e3e0b6f8a705d21cfd659fa2ab97019d785636742f5aaf5c48848f",
+      "id": "cloe.preview004.cloe.server-parity1.dispatch.v1",
+      "kind": "import_module",
+      "owner": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_evidence.py",
+      "owner_sha256": "5c4737170a79bdf36fadcdbb4027170dcbadac8ba522b61ad54135d4ba3845e5",
+      "parameters": {
+        "domain_module": "repomap_test_support.test_cov5k_r2_fix2_dynamic_targets",
+        "domain_path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.py",
+        "domain_sha256": "7abbd8f0d293ecc15c0a13afc61ce3cb571de82bcf106134ee2b9c153310e3dd"
+      },
+      "recipe": "guarded_symbol_import",
+      "supersedes": "cloe.server-parity1.dispatch.v1",
+      "symbol": "_resolve_symbol",
+      "targets": [
+        {
+          "module": "actual_refresh_failure_causality",
+          "path": "tools/actual_refresh_failure_causality.py",
+          "sha256": "f88ad8e0a518c522bc42022bc645f6852f4779a3edb9771a9600bccc4ad3767f",
+          "symbol": "FailureCausalityAuthority.record_code"
+        },
+        {
+          "module": "process_rss_monitor",
+          "path": "tools/process_rss_monitor.py",
+          "sha256": "621ba5ee6587890399e2a505139c08e8cee36a533a62d537443f2a30267b991a",
+          "symbol": "ProcessRssMonitor.run"
+        },
+        {
+          "module": "common_lore_index.cli.dispatch",
+          "path": "src/main/python/common_lore_index/cli/dispatch.py",
+          "sha256": "805d96cd1a22c635f4066527b51c76eda6c47eb906bcdeb40e650d38f0e00e16",
+          "symbol": "dispatch_command"
+        },
+        {
+          "module": "repomap_test_support.resource_test_images",
+          "path": "src/test/support/python/repomap_test_support/resource_test_images.py",
+          "sha256": "958fb547b2b7b78b45872dffcd2175823da66d842bfccf0bf057736f0fc99a84",
+          "symbol": "TestImageManager.build_ephemeral_image"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_backup"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_build"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_removal"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_start"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_stop"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_database_initialization"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_database_removal"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_docker_stats_diagnostic"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_psql_native_load"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_restore"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_schema_migration"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_test_harness"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce",
+          "symbol": "execute_complete_gate"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce",
+          "symbol": "execute_focused_selection"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce",
+          "symbol": "execute_former_failure_node"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_fresh_public_rehearsal"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_mixed_configured_campaign"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_observer_request"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_observer_schedule"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_owning_area_execution"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_prior_state_preservation"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "124e1c7d05016c601739f946a6a4fd69646c794b0168e80444a612bb4189ef30",
+          "symbol": "execute_preparation_condition"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "124e1c7d05016c601739f946a6a4fd69646c794b0168e80444a612bb4189ef30",
+          "symbol": "execute_preparation_state_path"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd",
+          "symbol": "ProcessBoundaryRecorder.run"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd",
+          "symbol": "execute_zero_process_boundary"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_container_rss"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_container_rss_equivalence"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_failure_causality"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_process_containment_companion"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_process_rss"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_runtime_driver_read"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_terminal_live_cohort"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_terminal_read"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_terminal_stage_matrix"
+        },
+        {
+          "module": "run_tests",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed",
+          "symbol": "main"
+        },
+        {
+          "module": "scale14_actual_refresh_supervisor",
+          "path": "tools/scale14_actual_refresh_supervisor.py",
+          "sha256": "baefb5662e5e0bcd481ef62cf7bf9c7d0ebfbd1508a6b1c1fd9cb9b7fff3a6e0",
+          "symbol": "ActualRefreshSupervisor"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "0d672b01f8ea519968b6dd9fc7e9bc3e971312500ace89898a5c4cc64102b417",
+          "symbol": "read_scale15_terminal_state"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "0d672b01f8ea519968b6dd9fc7e9bc3e971312500ace89898a5c4cc64102b417",
+          "symbol": "read_terminal_backend_summary"
+        },
+        {
+          "module": "scale28_backend_observer_session",
+          "path": "tools/scale28_backend_observer_session.py",
+          "sha256": "5a82b9053cf9305cddb927c904f7571079a7ba875ffefb238861f0016f380fce",
+          "symbol": "BackendObserverSession.run"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b",
+          "symbol": "prepare_parent_startup_authorities"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b",
+          "symbol": "prepare_startup_resources"
+        },
+        {
+          "module": "scale28_preparation_authority",
+          "path": "tools/scale28_preparation_authority.py",
+          "sha256": "7cc7c1945ce3bb75f63281d5b50b7f063bea5f6534e917e5f2b59e7b26587685",
+          "symbol": "HybridPreparationAuthority.prepare"
+        },
+        {
+          "module": "scale28_preparation_worker",
+          "path": "tools/scale28_preparation_worker.py",
+          "sha256": "053a531e49231da9923456c4bafcabda79d1807c1cac80b8795cf39cb3db62c3",
+          "symbol": "PreparationWorkerAttempt"
+        },
+        {
+          "module": "scale28_runtime_identity",
+          "path": "tools/scale28_runtime_identity.py",
+          "sha256": "7aca851bc41b76bf931a9c576f8d74ae9c0af36ff76c575ab934de998f1e9c46",
+          "symbol": "capture_runtime_identity"
+        }
+      ],
+      "test": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.unit.test.py",
+      "test_sha256": "ad5804fbd6e741ab9f753aafc0bdc74792d629eed2435b529bea1764f3b45a2e"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",

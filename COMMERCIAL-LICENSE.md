@@ -1,6 +1,6 @@
 # Commercial Licensing
 
-RepoMap future releases are available under the GNU Affero General Public
+Common Lore Index future releases are available under the GNU Affero General Public
 License v3.0 or later as the community license.
 
 Commercial licenses are available for users who need proprietary terms that
@@ -23,6 +23,6 @@ modifications, and other negotiated obligations.
 
 Code released before the `apache-2.0-final` tag remains available under the
 Apache License, Version 2.0. Those Apache-2.0 grants are not revoked by the
-license change for future RepoMap releases.
+license change for future Common Lore Index releases.
 
 For commercial licensing, contact: sam.lair@knowledge-forge.ai.

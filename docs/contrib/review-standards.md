@@ -1,4 +1,4 @@
-# RepoMap Review Standards
+# Common Lore Index Review Standards
 
 Reviews should protect behavior, boundaries, and project readability.
 

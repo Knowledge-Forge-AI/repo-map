@@ -1,4 +1,4 @@
-# RepoMap Qualification Evidence Contract
+# Common Lore Index Qualification Evidence Contract
 
 ## Authority and use
 
@@ -93,7 +93,7 @@ requirement. Its retention lifecycle remains governed by
 [ADR 0048](../adr/2026/08/0048-test-harness-resource-retention-reclamation-and-host-admission.md).
 
 When an active orchestration environment supplies an artifact destination, a
-managed RepoMap phase or subphase produces this bundle on every terminal
+managed Common Lore Index phase or subphase produces this bundle on every terminal
 outcome: success, failure, refusal, partial result, hard stop, or
 manager-disposition stop.
 

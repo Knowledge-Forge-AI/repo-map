@@ -72,20 +72,20 @@ class TestPublicExportPolicy(unittest.TestCase):
             self.assertTrue(any("0.1.0" in v for v in violations))
 
     def test_default_target_is_the_coherent_preview_version(self) -> None:
-        self.assertEqual(DEFAULT_TARGET_VERSION, "0.0.3")
+        self.assertEqual(DEFAULT_TARGET_VERSION, "0.0.4")
         self.assertEqual(check_version_consistency(Path(__file__).resolve().parents[6]), [])
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
             pkg_dir = repo_root / "src/main/python/common_lore_index"
             pkg_dir.mkdir(parents=True)
-            for version in ("0.0.3", "0.0.2"):
+            for version in ("0.0.4", "0.0.2"):
                 (repo_root / "pyproject.toml").write_text(f'[project]\nversion = "{version}"\n')
                 (pkg_dir / "__init__.py").write_text(f'__version__ = "{version}"\n')
                 violations = check_version_consistency(repo_root)
                 self.assertEqual(bool(violations), version != DEFAULT_TARGET_VERSION)
         with self.assertRaises(SystemExit), redirect_stdout(io.StringIO()) as output:
             main(["--help"])
-        self.assertIn("(default: 0.0.3)", " ".join(output.getvalue().split()))
+        self.assertIn("(default: 0.0.4)", " ".join(output.getvalue().split()))
 
     def test_version_consistency_missing_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -99,11 +99,11 @@ class TestPublicExportPolicy(unittest.TestCase):
                 "base": {"ref": "main"},
                 "head": {
                     "ref": "staging",
-                    "repo": {"full_name": "Knowledge-Forge-AI/repo-map"},
+                    "repo": {"full_name": "Knowledge-Forge-AI/common-lore-index"},
                 },
             }
         }
-        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/repo-map")
+        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/common-lore-index")
         self.assertEqual(violations, [])
 
     def test_promotion_policy_rejects_non_staging_head(self) -> None:
@@ -112,11 +112,11 @@ class TestPublicExportPolicy(unittest.TestCase):
                 "base": {"ref": "main"},
                 "head": {
                     "ref": "feature-branch",
-                    "repo": {"full_name": "Knowledge-Forge-AI/repo-map"},
+                    "repo": {"full_name": "Knowledge-Forge-AI/common-lore-index"},
                 },
             }
         }
-        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/repo-map")
+        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/common-lore-index")
         self.assertTrue(any("only 'staging' may promote to 'main'" in v for v in violations))
 
     def test_promotion_policy_rejects_fork(self) -> None:
@@ -129,8 +129,8 @@ class TestPublicExportPolicy(unittest.TestCase):
                 },
             }
         }
-        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/repo-map")
-        self.assertTrue(any("head must come from 'Knowledge-Forge-AI/repo-map'" in v for v in violations))
+        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/common-lore-index")
+        self.assertTrue(any("head must come from 'Knowledge-Forge-AI/common-lore-index'" in v for v in violations))
 
     def test_promotion_policy_rejects_non_main_base(self) -> None:
         payload = {
@@ -138,15 +138,15 @@ class TestPublicExportPolicy(unittest.TestCase):
                 "base": {"ref": "staging"},
                 "head": {
                     "ref": "staging",
-                    "repo": {"full_name": "Knowledge-Forge-AI/repo-map"},
+                    "repo": {"full_name": "Knowledge-Forge-AI/common-lore-index"},
                 },
             }
         }
-        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/repo-map")
+        violations = check_promotion_policy(payload, "Knowledge-Forge-AI/common-lore-index")
         self.assertTrue(any("policy applies only to pull requests targeting 'main'" in v for v in violations))
 
     def test_promotion_policy_invalid_payload(self) -> None:
-        violations = check_promotion_policy({}, "Knowledge-Forge-AI/repo-map")
+        violations = check_promotion_policy({}, "Knowledge-Forge-AI/common-lore-index")
         self.assertEqual(violations, ["event payload has no pull_request object"])
 
     def test_candidate_identity_empty_is_no_op(self) -> None:
@@ -169,7 +169,7 @@ class TestPublicExportPolicy(unittest.TestCase):
                     "base": {"ref": "main"},
                     "head": {
                         "ref": "staging",
-                        "repo": {"full_name": "Knowledge-Forge-AI/repo-map"},
+                        "repo": {"full_name": "Knowledge-Forge-AI/common-lore-index"},
                     },
                 }
             }
@@ -177,7 +177,7 @@ class TestPublicExportPolicy(unittest.TestCase):
             violations = evaluate_public_export(
                 repo_root,
                 payload=payload,
-                repository="Knowledge-Forge-AI/repo-map",
+                repository="Knowledge-Forge-AI/common-lore-index",
                 expected_version="0.0.2",
             )
             self.assertEqual(violations, [])

@@ -192,7 +192,7 @@ class LocalDbBackupReportsInspectUnitTests(LocalDbBackupUnitTestCase):
             self.assertTrue(any("/usr/bin/pg_restore" in call for call in calls))
 
             table = format_backup_inspect_table(result)
-            self.assertIn("RepoMap local DB backup inspect", table)
+            self.assertIn("Common Lore Index local DB backup inspect", table)
             self.assertIn("dump_contents_read=true", table)
             self.assertIn("toc_entries=7", table)
 

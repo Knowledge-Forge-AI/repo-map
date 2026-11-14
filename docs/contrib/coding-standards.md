@@ -1,6 +1,6 @@
-# RepoMap Coding Standards
+# Common Lore Index Coding Standards
 
-RepoMap code should be idiomatic for the language it is written in, with local
+Common Lore Index code should be idiomatic for the language it is written in, with local
 project conventions taking priority over generic style preferences. These are
 defaults for new or touched code, not permission for broad rewrites: existing
 project style, compatibility contracts, tests, public APIs, documented
@@ -35,7 +35,7 @@ the tradeoff.
 - Write idiomatic Python. Follow PEP 8 and use PEP 20 as a guide for
   judgment.
 - Do not turn Python into Java by adding service/repository layers or
-  abstract class hierarchies without a concrete RepoMap need.
+  abstract class hierarchies without a concrete Common Lore Index need.
 - Prefer clear functions, small modules, dataclasses, typed dictionaries,
   and ordinary data structures over ceremony. Prefer the standard library
   when it is sufficient.
@@ -80,11 +80,11 @@ Go code follows `docs/contrib/go-standards.md`.
 
 ## Extraction And Safety
 
-- RepoMap extraction is static by default. Do not execute target repository
+- Common Lore Index extraction is static by default. Do not execute target repository
   code, scripts, shell or PowerShell profiles, tests, package managers,
   generated command strings, or repo-local tools as part of extraction.
 - Treat observed source facts as source/configuration/test intent unless
-  runtime execution is actually performed by a RepoMap-owned command whose
+  runtime execution is actually performed by a Common Lore Index-owned command whose
   scope explicitly allows it.
 - Preserve evidence paths and line ranges when available.
 - Preserve confidence boundaries: extracted, heuristic, manual, unknown,

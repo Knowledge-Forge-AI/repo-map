@@ -17,7 +17,7 @@ LOCAL11 pinned the earlier binary 3.2.12). Psycopg's C extension is built from
 source and dynamically linked to the host's libpq, so a Server Engine install
 needs a C compiler, matching libpq headers and runtime, and `pg_config` on the
 host. Its build tools and source archive install only from the repository's
-hash locks, without build isolation; RepoMap installs no host package. The
+hash locks, without build isolation; Common Lore Index installs no host package. The
 SQLite Local install needs none of this:
 
 ```sh
@@ -26,7 +26,7 @@ SQLite Local install needs none of this:
 python -m pip install --find-links ./dist 'common-lore-index==0.0.3'
 python -m pip install .
 # Server Engine (PostgreSQL): hash-locked build tools, then hash-pinned psycopg-c
-# built without isolation, then RepoMap without resolving again
+# built without isolation, then Common Lore Index without resolving again
 python -m pip install --require-hashes --no-deps --only-binary :all: --requirement tools/ci/psycopg_build.lock
 python -m pip install --require-hashes --no-deps --no-build-isolation --check-build-dependencies \
   --requirement tools/ci/project_dependencies.lock
@@ -200,7 +200,7 @@ configured graph, disabled graphs included, with `state`, `published`,
 | `not-initialized` | No database file; run `ops sqlite-init` |
 | `current` | A readable current database of this graph; `published` is false until the first accepted generation |
 | `schema-behind` | An exact older known schema (for example a v1 database or a restored v1 backup) with its `accepted_generation`; `error` is `graph-database-schema-behind`. Ordinary reads, refresh and init refuse it until `ops sqlite-upgrade` runs |
-| `unrecognized` | The file is not a current or exact-behind RepoMap database of this graph (`graph-database-unrecognized`, `-schema-drift`, `-schema-unsupported`, `-graph-mismatch`) |
+| `unrecognized` | The file is not a current or exact-behind Common Lore Index database of this graph (`graph-database-unrecognized`, `-schema-drift`, `-schema-unsupported`, `-graph-mismatch`) |
 | `unavailable` | The database could not be read now (`graph-database-busy`, `graph-database-unavailable`, `sqlite-runtime-unsupported`) |
 | `invalid-configuration` | The graph store would overlap a configured source root |
 
@@ -235,7 +235,7 @@ Each graph's database is
 `<home>/state/sqlite-local/graphs/<graph_id>.sqlite3` (mode 0600 in a 0700
 directory), with WAL sidecars (`-wal`, `-shm`) and a `.publish.lock` file next
 to it. The store must be on a local filesystem; WAL does not work over network
-filesystems. Do not copy a database file while RepoMap may be using it, and do
+filesystems. Do not copy a database file while Common Lore Index may be using it, and do
 not copy it without its sidecars; use `ops sqlite-backup` (below) instead.
 
 Every command that changes a graph's Local state (`sqlite-init`,
@@ -264,7 +264,7 @@ same rule as `sqlite-cleanup-layout-invalid`) before taking the lock or
 writing anything. This also applies to a symlinked `state` whose target is
 itself named `state`, which LOCAL9 still accepted. The home itself may be a
 symlink. Read-only commands (`config-check`, `graphs`, `mcp serve`) do not
-check it. RepoMap never relinks or migrates `state/`; to keep data on another
+check it. Common Lore Index never relinks or migrates `state/`; to keep data on another
 volume, symlink the home instead.
 
 On a SQLite home, `refresh-graph` and `refresh-enabled` refuse
@@ -302,9 +302,9 @@ repomap-kg ops sqlite-restore --repo-map-home ~/.repo-map-local --graph example 
 ```
 
 A completed backup is a directory holding exactly two `0600` files. When
-`--output` is absent, RepoMap creates the directory with mode `0700` (a process
+`--output` is absent, Common Lore Index creates the directory with mode `0700` (a process
 umask can only narrow it). An existing empty directory you supply keeps its
-own mode: RepoMap neither changes nor checks it, so make it private yourself
+own mode: Common Lore Index neither changes nor checks it, so make it private yourself
 (for example `chmod 700`). The files:
 
 - `graph.sqlite3`: a self-contained snapshot (no `-wal`/`-shm`) of the graph
@@ -556,7 +556,7 @@ What `--yes` does:
 | Attempt whose record is `terminal-accepted`/`terminal-failed` and whose `expires_at_epoch` has passed (24 h after settlement), in either directory | Removed; its tree must hold only real directories and single-link files you own |
 | Terminal attempt not yet expired | Kept |
 | Graph attempt still `publication-reconciliation` | Kept; the next `ops refresh-graph` reconciles it (`graph-attempt-unsettled`) |
-| Shared attempt still `publication-reconciliation` | Kept; `legacy-unresolved-attempt`, manual recovery required (see Interrupted publications). It carries no publication identity, so RepoMap never attributes it to a graph or settles it |
+| Shared attempt still `publication-reconciliation` | Kept; `legacy-unresolved-attempt`, manual recovery required (see Interrupted publications). It carries no publication identity, so Common Lore Index never attributes it to a graph or settles it |
 | Attempt directory without a `portable-result.json` | Kept (`graph-attempt-incomplete`, `legacy-incomplete-attempt`) |
 | Orphan `.<graph_id>.sqlite3.init-*` or `.restore-*` beside a current or schema-behind database | Removed. A second hard link to the live database loses only its orphan name |
 | Orphan beside an absent database that is empty or a truncated/non-SQLite/non-WAL file, with no non-empty `-wal` or `-journal` | Removed (`partial`) |
@@ -576,7 +576,7 @@ is one of two kinds, and neither is recovered by cleanup:
   it by rerunning `ops sqlite-restore` from the **same verified backup** into
   the still-absent database. Do not run `ops sqlite-init` first: that creates
   the database, and restore then refuses `sqlite-restore-target-exists`. If
-  that backup is no longer available, stop every RepoMap process and move the
+  that backup is no longer available, stop every Common Lore Index process and move the
   orphan (with any sidecars of the same name) out of the graph store into a
   quarantine directory for manual forensic handling before any later `--yes`:
   once a database exists, the orphan is stale and `--yes` removes it.
@@ -596,7 +596,7 @@ wrong owner, mode or link count, an unreadable or malformed record, an unknown
 retention class, an unexpected node inside an expired attempt, or an orphan
 that is not a plain owner-only file), the whole run is `refused` and nothing
 changes. The payload names only the class (`unsafe-graph-attempt`,
-`unsafe-legacy-attempt`, `unsafe-orphan`), not the path. Stop every RepoMap
+`unsafe-legacy-attempt`, `unsafe-orphan`), not the path. Stop every Common Lore Index
 process, inspect the directories listed above, move the offending entry into a
 quarantine directory outside the home, and rerun.
 
@@ -676,7 +676,7 @@ until a publication route carries acquisition metadata; see ADR 0075.
 | `graph-publication-rejected` | Validation or a database constraint refused the bundle; nothing was published |
 | `graph-publication-internal-error` | A database programming or interface error stopped the publisher; nothing was published (report it) |
 | `graph-publication-reconciliation-required: <reason>` | An earlier refresh of this graph left an attempt whose outcome cannot be settled safely; nothing was captured or published (see Recovery) |
-| `graph-database-unrecognized`, `graph-database-schema-drift`, `graph-database-schema-unsupported`, `graph-database-graph-mismatch` | The file is not a current or exact-behind RepoMap database of this graph; it is never reinitialized or upgraded |
+| `graph-database-unrecognized`, `graph-database-schema-drift`, `graph-database-schema-unsupported`, `graph-database-graph-mismatch` | The file is not a current or exact-behind Common Lore Index database of this graph; it is never reinitialized or upgraded |
 | `graph-database-schema-behind: run ops sqlite-upgrade` | An exact older schema; run `ops sqlite-upgrade` (see Schema upgrade) |
 | `graph-migration-reconciliation-required: schema upgrade outcome unknown` | An upgrade's commit could not be confirmed; rerun `ops sqlite-upgrade`, do not restore over it |
 | `sqlite-upgrade-backup-unverified: <reason>` | The pre-upgrade backup did not verify against the live database; nothing was migrated and the backup was kept |
@@ -719,12 +719,12 @@ orphan with SQLite: an orphan left after the install step is a second hard
 link to the live database, and a SQLite client opening it would use a
 different `-wal`/`-shm` pair.
 
-A final database that RepoMap refuses as `graph-database-unrecognized` is never
+A final database that Common Lore Index refuses as `graph-database-unrecognized` is never
 deleted or reinitialized automatically, because it may hold user state. This
 includes a 0-byte or partial file left by an interrupted initialization before
 this change. To recover:
 
-1. Stop every RepoMap process that uses the home (`mcp serve`,
+1. Stop every Common Lore Index process that uses the home (`mcp serve`,
    `ops refresh-graph`, `ops sqlite-init`).
 2. Move the database file **together with** its `-wal` and `-shm` sidecars, if
    present, into a quarantine directory outside the graph store. Never move or
@@ -781,7 +781,7 @@ and changes nothing. The reasons are:
 
 A busy database clears once the other writer finishes. For the other reasons:
 
-1. Stop every RepoMap process that uses the home.
+1. Stop every Common Lore Index process that uses the home.
 2. Confirm the accepted state read-only with `repomap_graph_status` over MCP.
    If the database itself is refused, follow the quarantine procedure above.
 3. Find the unsettled attempts: the refusal names a reason, not a directory.
@@ -790,7 +790,7 @@ A busy database clears once the other writer finishes. For the other reasons:
    `retention_class` is `"publication-reconciliation"` is one; for
    `multiple-unsettled-attempts` there are several. Decide from the accepted
    state which attempt, if any, is the true one; move each other matching
-   attempt directory into a quarantine directory. RepoMap never deletes or
+   attempt directory into a quarantine directory. Common Lore Index never deletes or
    overwrites them automatically.
 4. Rerun `ops refresh-graph`.
 
@@ -798,9 +798,9 @@ Local attempts from LOCAL1/LOCAL2 sit in the shared
 `state/portable-publication/attempts/` directory. They carry no publication
 identity and are never reconciled by a SQLite home. `ops sqlite-cleanup --yes`
 removes only those whose record is terminal and expired. An unsettled one is
-reported as `legacy-unresolved-attempt` and kept. RepoMap cannot tell which
+reported as `legacy-unresolved-attempt` and kept. Common Lore Index cannot tell which
 graph or backend wrote it, so it never guesses. To dispose of it, stop every
-RepoMap process, confirm each graph's accepted state read-only, and move the
+Common Lore Index process, confirm each graph's accepted state read-only, and move the
 directory into a quarantine directory outside the home.
 
 ## Mixed-v1 first use

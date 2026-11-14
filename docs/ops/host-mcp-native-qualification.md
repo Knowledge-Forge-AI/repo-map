@@ -169,7 +169,7 @@ The parent is `<checkout>/.venv/bin/python -I -B` running the kit's
 `tools/host_mcp_native_qualify.py`. It alone puts the kit's `tools` and
 `src/test/support/python` on `sys.path` for its fixture helpers.
 
-For its own duration it removes libpq `PG*` variables and the RepoMap
+For its own duration it removes libpq `PG*` variables and the Common Lore Index
 connection, registry and home selectors from its environment. It pins the
 Psycopg route and prepends `<checkout>/.venv/bin` to its `PATH`. When it
 finishes, it restores all of them.

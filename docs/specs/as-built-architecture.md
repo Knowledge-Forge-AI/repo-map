@@ -1,4 +1,4 @@
-# RepoMap As-Built Architecture
+# Common Lore Index As-Built Architecture
 
 Status: current normalized architecture index
 
@@ -6,7 +6,7 @@ Evidence baseline: ARCH-CLOSE, with subsequent Local/Server and navigation updat
 
 ## Purpose and boundary
 
-This document describes the architecture implemented by the committed RepoMap
+This document describes the architecture implemented by the committed Common Lore Index
 source, migrations, and tests at the evidence baseline. It also compares that
 implementation with accepted architecture decisions and phase records.
 
@@ -31,7 +31,7 @@ bounded scopes. Managed Cloud and Rust extraction remain future work.
 Headless Local does not require a GUI.
 
 The containerized PostgreSQL system remains the reference implementation alongside
-SQLite Local. RepoMap statically extracts observations from
+SQLite Local. Common Lore Index statically extracts observations from
 configured source roots, canonicalizes those observations, publishes graph
 state to exactly owned SQLite or PostgreSQL stores, and exposes bounded readback
 through its CLI and read-only MCP server. Canonical lists and embedded
@@ -303,7 +303,7 @@ that behavior is enabled.
 
 ## System context
 
-RepoMap has three local interaction surfaces: the command-line interface, the
+Common Lore Index has three local interaction surfaces: the command-line interface, the
 stdio MCP server, and a configuration- and storage-backed HTTP health/status
 server. They share
 configuration and storage contracts, but they are distinct entrypoints and do
@@ -363,7 +363,7 @@ flowchart TB
         MCP["MCP stdio process\nread-only queries"]
         STATUS["HTTP process\nlive, health, readiness, status"]
         GOHELP["Controlled Go helper child\nversioned JSONL protocol"]
-        CONFIG["RepoMap home and resolved TOML configuration"]
+        CONFIG["Common Lore Index home and resolved TOML configuration"]
         PG["PostgreSQL service\ngraph and control databases"]
     end
     CLI --> PG
@@ -377,14 +377,14 @@ flowchart TB
     STATUS --> CONFIG
     STATUS --> PG
     subgraph Compose["Generated Compose deployment today"]
-        CSTATUS["RepoMap HTTP status container"]
-        CPG["RepoMap-owned PostgreSQL container"]
+        CSTATUS["Common Lore Index HTTP status container"]
+        CPG["Common Lore Index-owned PostgreSQL container"]
     end
     CSTATUS -. "readiness probe without startup gating" .-> CPG
 ```
 
 `src/main/python/common_lore_index/runtime/commands.py::render_compose_yaml` creates
-the current two-service topology. Its RepoMap service runs `server serve`, and
+the current two-service topology. Its Common Lore Index service runs `server serve`, and
 `src/main/python/common_lore_index/server/http.py::RepoMapLocalRequestHandler`
 implements `GET /livez`, `GET /healthz`, `GET /readyz`, and `GET /status`. On the
 main thread, `serve_local_http` handles `SIGTERM` gracefully by closing the server
@@ -428,7 +428,7 @@ Equivalent or specialized module entrypoints are:
   acquisition-only commands that cannot mutate final graph state or freshness.
 
 `src/main/go/cmd/repomap-go-extract/main.go` is an internal helper executable,
-not a second user-facing RepoMap product. Python resolves it only through the
+not a second user-facing Common Lore Index product. Python resolves it only through the
 controlled contract in
 `src/main/python/common_lore_index/extractors/languages/go_helper.py` and invokes it
 through `src/main/python/common_lore_index/extractors/languages/go_protocol.py`.
@@ -446,12 +446,12 @@ inventing a common envelope that source does not implement.
 | Source planning | `bulk plan`, `api plan`, `github plan` | Required source configuration plus JSON/table plan projection; plans do not acquire or publish | Policy/configuration errors return handled failure | `cli/parser.py`; `cli/source_commands.py`; current read-only planning surfaces |
 | Complete-generation publication | `storage load-files` | JSONL path, repository name, root path, optional commit, storage selector, and optional JSON summary; the command derives complete generations and uses the receipt-bearing staged publication transaction | Handled observation/storage error is `1`; success is `0` | `cli/storage_parser.py`; `ops/direct_publication.py`; staged-publication tests; current final graph mutation authority |
 | Source acquisition | `sources ingest-feed`, `sources import-archive`, `sources import-warc`, `bulk import`, `api acquire`, `github acquire` | Required source configuration and local input plus JSON/table acquisition result schema version 1; mutation-only repository and PostgreSQL selectors are absent; `graph_mutated=false` and `freshness_updated=false` | Policy/acquisition error is `1`; success is `0`; no storage mutation is attempted | `cli/parser.py`; `cli/source_commands.py`; `ops/ingestion/`; current acquisition-only surface |
-| Configured refresh and reads | `ops config-check`, `graphs`, `refresh-graph`, `refresh-preflight`, `refresh-enabled`, `refresh-status`, `graph-summary`, `graph-files`, `graph-baseline`, `baseline-save`, `baseline-prune`, `drift-check`, `policy-dogfood` | RepoMap home/config plus graph selector; refresh mode is `direct` or explicit `coordinator`; read filters, bounds, confirmation, baseline paths, and JSON/table results are command-specific | No silent mode/connector fallback; handled errors are `1`; drift is represented in result vocabulary rather than a separate universal exit schema | `cli/parser.py`; `cli/dispatch.py`; `ops/`; mixed mutation, readback, and baseline lifecycle contracts |
-| Coordinator operations | `ops coordinator-serve`; `coordinator-service install/status/start/stop/restart/upgrade/uninstall/render/validate`; `coordinator-health`; `coordinator-control-status`; `coordinator-control-init`; `coordinator-job-status`; `coordinator-job-wait`; `coordinator-job-cancel`; `coordinator-jobs` | Exact RepoMap home, bounded wait/list controls, job identity, and optional JSON; service render is non-mutating while other actions have explicit lifecycle semantics | Auth/schema/ownership/state failures are closed protocol or CLI errors; no direct-mode fallback | `cli/parser.py`; `coordinator/`; `service_package/`; current durable orchestration and lifecycle surfaces |
+| Configured refresh and reads | `ops config-check`, `graphs`, `refresh-graph`, `refresh-preflight`, `refresh-enabled`, `refresh-status`, `graph-summary`, `graph-files`, `graph-baseline`, `baseline-save`, `baseline-prune`, `drift-check`, `policy-dogfood` | Common Lore Index home/config plus graph selector; refresh mode is `direct` or explicit `coordinator`; read filters, bounds, confirmation, baseline paths, and JSON/table results are command-specific | No silent mode/connector fallback; handled errors are `1`; drift is represented in result vocabulary rather than a separate universal exit schema | `cli/parser.py`; `cli/dispatch.py`; `ops/`; mixed mutation, readback, and baseline lifecycle contracts |
+| Coordinator operations | `ops coordinator-serve`; `coordinator-service install/status/start/stop/restart/upgrade/uninstall/render/validate`; `coordinator-health`; `coordinator-control-status`; `coordinator-control-init`; `coordinator-job-status`; `coordinator-job-wait`; `coordinator-job-cancel`; `coordinator-jobs` | Exact Common Lore Index home, bounded wait/list controls, job identity, and optional JSON; service render is non-mutating while other actions have explicit lifecycle semantics | Auth/schema/ownership/state failures are closed protocol or CLI errors; no direct-mode fallback | `cli/parser.py`; `coordinator/`; `service_package/`; current durable orchestration and lifecycle surfaces |
 | Server-memory reads | `ops server-memory-summary`, `ops server-memory-search` | Configured source, query/kind, limit/offset, JSON/table; read-only | Bounded validation/operation failure | `cli/parser.py`; `server/memory_bridge.py`; current optional read-only integration |
 | Storage graph reads | `storage nodes`, `edges`, `neighborhood`, `file-neighborhood`, `host-mutators`, `host-mutators-summary`, and canonical explanation operations | Canonical-only vocabulary; public lists and embedded neighborhood/evidence collections use schema-version 1 envelopes, deterministic ordering, independent limit/offset windows, defaults of 50, and maxima of 200; bounded legacy-shape aliases do not restore removed graph semantics | Storage/schema or invalid-window error is `1`; successful truncation returns continuation metadata | `cli/storage_parser.py`; storage readback dispatch; ARCH5E and ARCH7A tests; current bounded canonical API |
 | Storage summaries | `storage summary`, `ruby-summary`, `js-summary`, `js-framework-summary`, `openapi-summary`, `terraform-summary`, `python-summary`, `nix-summary`, `email-summary`, `bulk-summary`, `api-summary` | Root and connector selection plus JSON/table; `summary --legacy` exposes compatibility fields | Shape validation and handled storage failure | `cli/storage_parser.py`; `cli/storage_summary_commands.py`; current derived readback contracts |
-| Local runtime/lifecycle | `local setup`, `up`, `down`, `status`; `local db dump`, `dump-all`, `restore-all`, `backups`, `backup-info`, `backup-inspect`, `init`, `drop` | Exact RepoMap home/runtime selector and resolved graph/control target allowlist; dry-run/confirmation; init source/dump choice; backup identity; optional JSON. `dump-all` captures the exact resolved graph/control ownership set; `restore-all` requires the matching stable complete set and empty topology | Lifecycle refuses unrelated safe names before external access; destructive drop requires `--backup-first` and confirmation; coordinated capture holds stable exclusion; coordinated restore verifies every checksum and target before mutation, restores control last, and cleans invocation-created targets after failure | `cli/_local_dispatch.py`; `coordinator/local_lifecycle.py::maintenance_window_for_coordinated_backup`; `runtime/backup.py::dump_all_databases`; `runtime/backup_restore_sets.py`; current CLI-owned coordinated backup/restore authority |
+| Local runtime/lifecycle | `local setup`, `up`, `down`, `status`; `local db dump`, `dump-all`, `restore-all`, `backups`, `backup-info`, `backup-inspect`, `init`, `drop` | Exact Common Lore Index home/runtime selector and resolved graph/control target allowlist; dry-run/confirmation; init source/dump choice; backup identity; optional JSON. `dump-all` captures the exact resolved graph/control ownership set; `restore-all` requires the matching stable complete set and empty topology | Lifecycle refuses unrelated safe names before external access; destructive drop requires `--backup-first` and confirmation; coordinated capture holds stable exclusion; coordinated restore verifies every checksum and target before mutation, restores control last, and cleans invocation-created targets after failure | `cli/_local_dispatch.py`; `coordinator/local_lifecycle.py::maintenance_window_for_coordinated_backup`; `runtime/backup.py::dump_all_databases`; `runtime/backup_restore_sets.py`; current CLI-owned coordinated backup/restore authority |
 | MCP transport | `mcp serve` and `python -m common_lore_index.server.mcp` | MCP protocol `2024-11-05`; newline-delimited JSON-RPC over stdio; `tools/list` and `tools/call`; result contains text plus `structuredContent` | Schema rejects unknown methods, tools, fields, and invalid bounds; mutation/lifecycle tools are absent | `server/mcp.py`; `server/mcp_schemas.py`; current read-only transport |
 | MCP tools | Project/status, canonical graph and explanation reads, source/feed reads, configured-graph reads, search and summary operations, refresh-status reads, and server-memory reads | Per-tool JSON Schema declares required fields, graph visibility, privacy projection, deterministic default/maximum limits, offsets, and collection-specific continuation metadata | Read-only; unknown tools/fields and invalid bounds fail closed; every list and embedded graph collection is bounded | `server/mcp.py::TOOL_FUNCTIONS`; `server/mcp_schemas.py::tool_definitions`; ARCH7A/ARCH7B tests; current bounded read-only API |
 | HTTP health/status | `server serve`; `GET /livez`; `GET /healthz`; `GET /readyz`; `GET /status` | Schema-version 1 path-free JSON: process liveness, configuration health, storage readiness, required-schema readiness, bounded counts, and fixed safety metadata; no graph/repository/database identifiers or raw diagnostics | Local bind enforced unless explicit container-internal bind; failed health/readiness is HTTP 503, aggregate status is informational HTTP 200, unknown path is 404, graph probes cap at 200, and every response caps at 8 KiB | `server/http.py`; current bounded read-only status surface, not MCP |
@@ -459,7 +459,7 @@ inventing a common envelope that source does not implement.
 | Worker protocol | Version 1 JSONL message stream with job start, progress/result, cancellation, and worker exit; optional `portable_snapshot_v1` contract `1.0` with current explicit receipt-write status | Exact job/attempt/generation/capability/manifest identity; bounded subprocess argv and output; portable worker receives no database or target-source-root authority | Version, identity, ordering, cancellation, malformed-message, artifact, contract, authority, and receipt-write failures are explicit; every portable terminal remains `publication_state: not_started` | `coordinator/protocol.py`; `coordinator/refresh_worker.py`; `coordinator/portable_worker.py`; current internal contract |
 | Go helper protocol | Protocol version 1 JSONL subprocess request/result | Explicit or package-local executable, separate argv, deterministic static extraction response; release images contain the selected Linux architecture helper at the controlled package path | Missing/mismatched helper or protocol fails closed; no ambient executable fallback | `extractors/languages/go_helper.py`; `extractors/languages/go_protocol.py`; `src/main/go/internal/protocol/protocol.go`; ARCH7F/ARCH8 packaging tests; current packaged internal contract |
 | Service-package contract | `ops coordinator-service ...` | One portable foreground command rendered to launchd or systemd-user definition; owner-private environment and pre-resolved executable/database boundary | Install/start/upgrade/uninstall are explicit; render/validate are non-destructive | `service_package/contract.py`; `service_package/platforms.py`; current host adapter, not graph semantics |
-| Configuration schema | Operations TOML schema version 1 plus one resolved authority model | RepoMap home, graph registry, optional graph-local source-binding inventory, PostgreSQL, profiles, privacy, refresh, runtime, service, server-memory, and credentials; every legacy graph projects one binding and every graph resolves one effective database | Unsupported/missing fields, ambiguous legacy/explicit sources, duplicate or colliding binding identities, unsupported multi-source readback/refresh, database collisions, and repository-identity collisions fail closed with bounded diagnostics | `ops/config.py::SUPPORTED_SCHEMA_VERSION`; `ops/resolved_config.py`; multi-source and resolver/projection tests; current exact topology authority |
+| Configuration schema | Operations TOML schema version 1 plus one resolved authority model | Common Lore Index home, graph registry, optional graph-local source-binding inventory, PostgreSQL, profiles, privacy, refresh, runtime, service, server-memory, and credentials; every legacy graph projects one binding and every graph resolves one effective database | Unsupported/missing fields, ambiguous legacy/explicit sources, duplicate or colliding binding identities, unsupported multi-source readback/refresh, database collisions, and repository-identity collisions fail closed with bounded diagnostics | `ops/config.py::SUPPORTED_SCHEMA_VERSION`; `ops/resolved_config.py`; multi-source and resolver/projection tests; current exact topology authority |
 | Baseline and drift schemas | Stored/preflight baseline JSON and drift result JSON/table | Baseline payloads reuse graph-summary/preflight shapes and accept historical wrapper forms; current payloads have no dedicated baseline/drift schema version | Explicit graph mismatch and invalid baseline errors; warning result represents detected drift | `ops/baselines.py`; `ops/baseline_operations.py`; current compatibility constraint requiring versioning before incompatible change |
 | Graph/data identity versions | Graph key version 1; source/binding/snapshot/candidate identity version 1; raw observation schema version 1; stage manifest schema version 1 | Multi-source identities use distinct domains and canonical vectors; they do not re-key graph rows or imply publication acceptance | Unsupported versions, duplicate bindings, malformed manifests, and ambiguous source configuration fail closed at their owning boundary | `graph/keys.py::GRAPH_KEY_VERSION`; `graph/multi_source.py`; `observations/raw.py::SCHEMA_VERSION`; `storage/staged_ingestion.py`; current identity/schema authorities |
 
@@ -606,7 +606,7 @@ read-only only into units that require them. Coordinator state and other
 writable paths are narrowly owned. Private backup and lifecycle-admin state is
 mounted only into the one-shot lifecycle boundary; HTTP and MCP cannot access
 it. Enabled source roots use deterministic validated path projection rather
-than a broad writable RepoMap-home mount.
+than a broad writable Common Lore Index-home mount.
 
 ADR 0038 accepts one dedicated database per graph for destructive and backup
 isolation. ARCH1B enforces unique effective graph databases, a distinct derived
@@ -619,7 +619,7 @@ backup-first drop snapshot, verification, and destruction.
 
 ## Extraction, observations, and canonicalization
 
-Extraction is static. RepoMap reads configured source files but does not
+Extraction is static. Common Lore Index reads configured source files but does not
 execute target project code, scripts, profiles, package managers, or generated
 commands. Language-specific extractors produce bounded observations with
 evidence. Normalization preserves explicit confidence and unsupported or
@@ -756,7 +756,7 @@ Key source and test evidence is:
 
 ## Failure and recovery
 
-RepoMap fails closed at authority boundaries:
+Common Lore Index fails closed at authority boundaries:
 
 - missing or incompatible coordinator control schema blocks coordinator start;
 - coordinator-control initialization is explicit and is not performed by
@@ -1042,7 +1042,7 @@ Container ownership is not database ownership. `local db drop` therefore
 admits only an exact member of the resolved graph/control ownership set before
 container, backup, lock, or destructive access. It also requires a verified
 backup, explicit confirmation, a safe PostgreSQL identifier, and a
-RepoMap-labeled container. ARCH7C2 wraps confirmed, non-dry-run backup-first drop in the existing
+Common Lore Index-labeled container. ARCH7C2 wraps confirmed, non-dry-run backup-first drop in the existing
 cross-plane maintenance authority before recovery-point capture. A graph drop
 holds control plus that exact graph; a control drop holds control plus every
 configured graph in deterministic order. The window remains held through dump,
@@ -1125,7 +1125,7 @@ must declare compatible encoding/collation or explicit byte-stable ordering.
 
 ```mermaid
 flowchart TB
-    User["Authorized local operator"] --> CLI["Explicit RepoMap CLI command"]
+    User["Authorized local operator"] --> CLI["Explicit Common Lore Index CLI command"]
     CLI --> Runtime["Runtime setup, up, down, status"]
     CLI --> GraphAdmin["Graph database fresh initialize and readiness check"]
     CLI --> Backup["Dump, inspect, restore, backup-first drop"]
@@ -1135,7 +1135,7 @@ flowchart TB
     Backup --> PG
     ControlInit --> PG
     MCP["Read-only MCP"] -. "no lifecycle authority" .-> PG
-    HTTP["HTTP health and status"] -. "configuration read only" .-> Config["RepoMap home and TOML configuration"]
+    HTTP["HTTP health and status"] -. "configuration read only" .-> Config["Common Lore Index home and TOML configuration"]
     Coord["Long-running coordinator"] -. "schema check only" .-> PG
 ```
 
@@ -1237,7 +1237,7 @@ and leaves ordinary CLI startup fail-fast.
 ## Platform and service packaging
 
 Current release checkpoint (2026-10-29): public main v0.0.3 at `5ad00d1`
-passed all nine jobs in [CI87 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/40779161422).
+passed all nine jobs in [CI87 attempt 1](https://github.com/Knowledge-Forge-AI/common-lore-index/actions/runs/40779161422).
 The native AMD assembled-system report, five scenarios, round trip, MCP,
 separate host authority/export and cleanup were verified for that candidate.
 Earlier D12/CI72 hold descriptions below are historical checkpoints, not the
@@ -1321,7 +1321,7 @@ a claim that this documentation phase reran the operation.
 | Control lifecycle | Explicit one-shot status/init/upgrade; service startup must not initialize schema | `release_cluster.py` provisions or backup-first advances control before coordinator startup; the coordinator only verifies exact-current state | Coordinator lifecycle, maintenance ownership, release-cluster unit, and fresh-cluster status tests | ARCH5, ARCH7C, and ARCH7G status evidence | No material mismatch |
 | Existing-database schema upgrade | Version-tracked, backup-first graph and control upgrades preserve supported installations | ARCH5 supplies migration authority; ARCH7C through ARCH7E supply maintenance, recovery, and grants; ARCH7F installs the catalogs; ARCH7G deploys idempotent fresh/current and backup-first supported-forward graph/control paths | Graph/control ledger, ownership, recovery, role, installed-resource, release-cluster, and failure-path tests | ARCH5 through ARCH7G status evidence | No material deployed-lifecycle mismatch; ARCH8 runs the complete prior-version ladder |
 | Cluster backup and restore | An end-user cluster enumerates and recovers every owned graph and control database | ARCH7D2 and ARCH7D3 provide exact coordinated capture/restore; ARCH7E reapplies grants; ARCH7F pins packaged clients; ARCH7G gives one-shot administration the exclusive private backup/admin capability and accepts packaged dump plus restore inspection | Topology, stability, checksum, ordering, cleanup, role, fixed-client, mount-capability, and fresh-cluster tests | ARCH7D2 through ARCH7G status evidence | No material authority mismatch; ARCH8 performs the integrated restore/recovery ladder |
-| Destructive database ownership | Drop targets only an exactly resolved RepoMap-owned graph/control database and preserves a recoverable final point | ARCH7C resolves exact ownership and holds maintenance through backup/verification/destruction; ARCH7D provides coordinated multi-database recovery | Ownership, lock, admission, backup/verify/drop, complete-set recovery, failure, dry-run, confirmation, and privacy tests | ARCH7C through ARCH8 status evidence | No material mismatch |
+| Destructive database ownership | Drop targets only an exactly resolved Common Lore Index-owned graph/control database and preserves a recoverable final point | ARCH7C resolves exact ownership and holds maintenance through backup/verification/destruction; ARCH7D provides coordinated multi-database recovery | Ownership, lock, admission, backup/verify/drop, complete-set recovery, failure, dry-run, confirmation, and privacy tests | ARCH7C through ARCH8 status evidence | No material mismatch |
 | Backup resource/privacy contract | Backup/restore should stream with bounded memory and create private artifacts | ARCH7D1 streams dump/restore file descriptors, hashes in bounded chunks, uses explicit `0700`/`0600` modes, and atomically publishes a complete staged directory; ARCH7D2/ARCH7D3 apply those primitives to complete coordinated sets; ARCH7E reconstructs intentionally omitted owners/privileges through declarative grants | Chunked stream, permissive-umask, digest, atomic visibility, complete-set validation, ordered restore, failure cleanup, and exact privilege tests pass | ARCH7D1 through ARCH7E status evidence | Artifact IO, privacy, coordinated recovery, and role reconstruction are normalized |
 | Database capability separation | Long-running readers, refresh workers, coordinator control, and lifecycle administration have distinct minimum authority | ARCH7E defines and verifies the grants; ARCH7G projects per-unit secrets and writable mounts so lifecycle administration is absent from long-running units | Unit, disposable-PostgreSQL, render, and fresh-cluster tests prove the role and capability matrix | ARCH7E and ARCH7G status evidence | No material mismatch |
 | Database determinism | Database encoding/collation and protocol ordering are stable across supported release clusters | ARCH7G initializes the cluster with UTF-8/C and creates graph/control databases from `template0` with explicit UTF-8/C attributes; application ordering remains explicit where required | Exact SQL/render tests and fresh-cluster catalog acceptance | ARCH7G status evidence | No material release-cluster mismatch; ARCH8 repeats upgrade/restore equivalence |
@@ -1341,11 +1341,11 @@ container cluster, and ARCH8 accepts its integrated public-safe deployment,
 recovery, restart, packaging, and repository ladder.
 
 Psycopg does not require a new service. Psycopg and the retained `psql` client
-can coexist in a RepoMap runtime image. The Go helper does not require a new
+can coexist in a Common Lore Index runtime image. The Go helper does not require a new
 network service: its versioned JSONL subprocess contract can be satisfied by a
 platform-matched executable built into the image. The foreground coordinator
 can run as an explicit process unit, and its control database can remain a
-separate database in the same RepoMap-owned PostgreSQL service. Read-only MCP
+separate database in the same Common Lore Index-owned PostgreSQL service. Read-only MCP
 can run as a separate stdio-integrated process or through a later accepted
 local-only MCP network transport.
 
@@ -1391,7 +1391,7 @@ the existing authority boundaries:
   and the retained `psql` client;
 - a deterministic multi-platform build that places the matching Go helper at
   the controlled package location without depending on host Go at runtime;
-- persistent RepoMap home and database storage plus explicit read-only mounts
+- persistent Common Lore Index home and database storage plus explicit read-only mounts
   and deterministic container paths for every enabled graph root;
 - allowlisted read-only config/source projections for long-running units,
   narrowly owned coordinator writable state, and backup/admin mounts available
@@ -1420,7 +1420,7 @@ the existing authority boundaries:
 ARCH8 accepts the integrated ladder for direct and coordinator forced-full
 publication, Python and Go extraction, every supported graph and control
 upgrade, rollback/recovery, coordinated backup/restore, repeated equivalence,
-RepoMap self-hosting, and one public full repository. A closed catalog keeps
+Common Lore Index self-hosting, and one public full repository. A closed catalog keeps
 the cross-phase evidence executable as one gate. The public full-repository
 rung completes repeated receipt-bearing publication with equal bounded counts;
 no target code executes. Native Windows background-service packaging remains
@@ -1782,7 +1782,7 @@ against `RunPublicationReceipt`, `PortableSnapshotManifest`, `PublicationBundle`
 MCP schemas, wire names, and runtime behavior are unchanged in W2.
 
 The exact W2 milestone on staging `ae636963` is qualified by
-[CI101 attempt1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41204249885),
+[CI101 attempt1](https://github.com/Knowledge-Forge-AI/common-lore-index/actions/runs/41204249885),
 including all nine jobs and retained same-attempt staging/system evidence.
 Its measured integration branch coverage81.9 passes80%, with the requested82%
 target carried into W3. PostgreSQL native FTS and request-pinned text capability

@@ -330,7 +330,7 @@ def test_local_refresh_cleanup_and_status_formatting_contracts(tmp_path: Path) -
     assert cleaned_payload["graph_attempts"]["expired_terminal_removed"] == 2
     assert not orphan_path.exists()
 
-    assert "RepoMap ops config status" in format_local_config_status_table(cfg)
+    assert "Common Lore Index ops config status" in format_local_config_status_table(cfg)
     assert "g-local" in format_local_graph_registry_table(cfg)
 
 

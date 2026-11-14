@@ -169,7 +169,7 @@ mode = "read_only"
                     )
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("RepoMap ops refresh result", stdout.getvalue())
+        self.assertIn("Common Lore Index ops refresh result", stdout.getvalue())
         self.assertIn("repo-map | repo-map |  | public-dev | success", stdout.getvalue())
         self.assertIn("destructive_db_actions=false", stdout.getvalue())
         refresh_enabled.assert_called_once()

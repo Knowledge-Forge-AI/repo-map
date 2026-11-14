@@ -50,7 +50,7 @@ class SystemdUserAdapter:
         )
 
     def validate(self, content: bytes, spec: ServicePackageSpec) -> None:
-        if not self.recognizes(content) or content != self.render(spec):
+        if not self.recognizes(content) or not _matches_rendered_unit(content, self.render(spec)):
             raise ValueError("service_definition_invalid")
 
     def recognizes(self, content: bytes) -> bool:
@@ -86,7 +86,7 @@ class SystemdUserAdapter:
             restart_delay_seconds=10,
             shutdown_timeout_seconds=30,
         )
-        return content == expected
+        return _matches_rendered_unit(content, expected)
 
     def module_classification(self, content: bytes) -> str:
         if not self.recognizes(content):
@@ -142,6 +142,16 @@ class SystemdUserAdapter:
         return (("/usr/bin/systemctl", "--user", "restart", _UNIT_NAME),)
 
 
+def _matches_rendered_unit(content: bytes, expected: bytes) -> bool:
+    """Admit the two exact generated descriptions; preserve every other byte."""
+    legacy = expected.replace(
+        b"\nDescription=Common Lore Index foreground coordinator\n",
+        b"\nDescription=RepoMap foreground coordinator\n",
+        1,
+    )
+    return content == expected or content == legacy
+
+
 def _render_unit(
     *,
     foreground_argv: tuple[str, ...],
@@ -160,7 +170,7 @@ def _render_unit(
     lines = [
         _MARKER,
         "[Unit]",
-        "Description=RepoMap foreground coordinator",
+        "Description=Common Lore Index foreground coordinator",
         f"X-RepoMap-Service-Identity={service_identity}",
         "X-RepoMap-Service-Package=1",
         f"X-RepoMap-Python-SHA256={python_sha256}",

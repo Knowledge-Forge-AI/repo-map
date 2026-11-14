@@ -658,7 +658,7 @@ wheels = [
 
 [[package]]
 name = "common-lore-index"
-version = "0.1.0"
+version = "0.0.4"
 source = { editable = "." }
 dependencies = [
     { name = "typing-extensions" },

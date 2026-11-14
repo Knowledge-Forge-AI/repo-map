@@ -1,5 +1,5 @@
-"""RepoMap knowledge graph engine."""
-__version__ = "0.0.3"
+"""Common Lore Index knowledge graph engine."""
+__version__ = "0.0.4"
 
 # One current installed owner; ADR0118 changes these only at the atomic cutover.
 DISTRIBUTION_NAME = "common-lore-index"

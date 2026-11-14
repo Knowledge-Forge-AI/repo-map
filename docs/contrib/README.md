@@ -1,7 +1,7 @@
-# Contributing To RepoMap
+# Contributing To Common Lore Index
 
 This directory collects human-facing contribution standards and contributor
-AI-agent skills for working on RepoMap itself.
+AI-agent skills for working on Common Lore Index itself.
 
 Start here:
 
@@ -20,7 +20,7 @@ Start here:
 - [Refactor roadmap](refactor-roadmap.md)
 - [Contributor skills](skills/README.md)
 
-Operational RepoMap skills live under `docs/ops/skills/`. Status documents
+Operational Common Lore Index skills live under `docs/ops/skills/`. Status documents
 remain in the complete historical archive under `docs/status/YYYY/MM/DD/`.
 New primary phase records are exit reports whose filenames end in `-exit.md`
 and whose H1 titles contain `Exit`; historical framing deviations are

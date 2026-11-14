@@ -169,7 +169,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                 )
 
         self.assertEqual(exit_code, 0, stderr)
-        self.assertIn("RepoMap local DB init: result=success", stdout)
+        self.assertIn("Common Lore Index local DB init: result=success", stdout)
         self.assertIn("source_mode=source", stdout)
         self.assertIn("database_created=true", stdout)
         self.assertIn("schema_initialized=true", stdout)

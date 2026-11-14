@@ -1,4 +1,4 @@
-# RepoMap Agent Hosted CI Stewardship Policy
+# Common Lore Index Agent Hosted CI Stewardship Policy
 
 ## Purpose And Authority
 
@@ -70,7 +70,7 @@ GitHub, billing, or promotion authority.
 
 ## Current Trigger And Cost Map
 
-RepoMap has five hosted lanes across three cost tiers:
+Common Lore Index has five hosted lanes across three cost tiers:
 
 | Candidate event | Lane | Trigger and work |
 | --- | --- | --- |
@@ -140,7 +140,7 @@ leaves a named gap blocking completion absent explicit manager acceptance.
 SQLite-only boundaries use temporary SQLite within repository-owned container
 isolation; PostgreSQL is needed for parity, not for SQLite itself.
 Every such selector is automatically dispatched into the host-disposable
-RepoMap sandbox; current PostgreSQL owners retain its Postgres harness. Scoped commands
+Common Lore Index sandbox; current PostgreSQL owners retain its Postgres harness. Scoped commands
 use `--no-coverage`; they make no whole-population coverage claim and do not
 weaken a threshold.
 
@@ -260,7 +260,7 @@ handoffs:
 | `EXECUTED_FAIL` | The named workload executed and failed; preserve the failing step and evidence category. |
 | `CANCELED_SUPERSEDED` | A newer revision or explicit cancellation made the attempt non-current. |
 
-The GitHub UI or API conclusion is an observation, not the RepoMap
+The GitHub UI or API conclusion is an observation, not the Common Lore Index
 classification. A workflow displayed as `failure` whose sole job reports all
 of the following did not execute repository workload:
 
@@ -370,7 +370,7 @@ account or repository is exhausted.
 
 ## External GitHub Behavior
 
-GitHub documentation is a changing external source, not RepoMap policy. As of
+GitHub documentation is a changing external source, not Common Lore Index policy. As of
 this policy's verification on 2026-08-29:
 
 - for private repositories, GitHub-hosted minutes are charged to the repository

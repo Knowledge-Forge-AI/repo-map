@@ -1,4 +1,4 @@
-"""Ops control, coordinator, service, and jobs parser construction for RepoMap CLI."""
+"""Ops control, coordinator, service, and jobs parser construction for Common Lore Index CLI."""
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ def add_ops_control_commands(
         release_cluster.add_argument(
             "--repo-map-home",
             required=True,
-            help="container-mounted RepoMap configuration authority",
+            help="container-mounted Common Lore Index configuration authority",
         )
         release_cluster.add_argument(
             "--json",

@@ -179,24 +179,24 @@ def test_explicit_local_mode_launches_and_replays_configured_refresh(
 
                 # Rich semantic validations of table formatters
                 refresh_table = format_coordinator_refresh_table(first)
-                assert "RepoMap coordinator refresh result" in refresh_table
+                assert "Common Lore Index coordinator refresh result" in refresh_table
                 assert "result | success" in refresh_table
                 assert f"job_id | {first_job_id}" in refresh_table
                 assert "graph_id | configured-refresh" in refresh_table
 
                 health_table = format_coordinator_health_table(health)
-                assert "RepoMap coordinator health" in health_table
+                assert "Common Lore Index coordinator health" in health_table
                 assert "health_schema_version | 2" in health_table
                 assert "status | ready" in health_table
                 assert "polling | running" in health_table
 
                 job_table = format_coordinator_job_table(resumed_status)
-                assert "RepoMap coordinator job" in job_table
+                assert "Common Lore Index coordinator job" in job_table
                 assert f"job_id | {first_job_id}" in job_table
                 assert "state | succeeded" in job_table
 
                 jobs_table = format_coordinator_jobs_table(recent)
-                assert "RepoMap coordinator jobs" in jobs_table
+                assert "Common Lore Index coordinator jobs" in jobs_table
                 assert first_job_id in jobs_table
             finally:
                 if runtime is not None:

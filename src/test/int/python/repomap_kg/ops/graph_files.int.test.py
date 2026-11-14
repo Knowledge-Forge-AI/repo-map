@@ -116,7 +116,7 @@ def test_canonical_graph_files_cli_filters_paginates_and_preserves_storage() -> 
             postgres.psql_command,
         )
         assert exit_code == 0, stderr
-        assert "RepoMap canonical graph files" in stdout
+        assert "Common Lore Index canonical graph files" in stdout
         assert "canonical_key" in stdout
 
         serialized = json.dumps(

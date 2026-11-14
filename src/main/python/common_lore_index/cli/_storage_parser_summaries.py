@@ -1,4 +1,4 @@
-"""Storage summary command parser construction for the RepoMap CLI."""
+"""Storage summary command parser construction for the Common Lore Index CLI."""
 
 from __future__ import annotations
 

@@ -54,7 +54,7 @@ def dispatch_coordinator_runtime_command(
                 "coordinator_ready_payload_invalid"
             )
         print(
-            "RepoMap local coordinator ready\n"
+            "Common Lore Index local coordinator ready\n"
             f"startup_recovery_scanned={recovery['scanned']}\n"
             f"startup_recovery_resolved={recovery['resolved']}\n"
             f"startup_recovery_pending={recovery['pending']}\n"

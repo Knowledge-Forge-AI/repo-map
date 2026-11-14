@@ -176,7 +176,7 @@ def test_mcp_serve_reads_a_sqlite_home_without_the_driver(tmp_path: Path) -> Non
     home = _home(tmp_path)
     _assert_driver_free(harness, harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "zulu"))
     responses = harness.mcp(home, [initialize(), tool(2, "repomap_graph_status", {"graph_id": "zulu"})])
-    assert responses[1]["result"]["serverInfo"]["name"] == "repomap-kg", responses[1]
+    assert responses[1]["result"]["serverInfo"]["name"] == "common-lore-index", responses[1]
     assert "result" in responses[2], responses[2]
     assert harness.forbidden_events() == [], harness.forbidden_events()
     assert not harness.imported_modules() & POSTGRES_IMPLEMENTATION, harness.imported_modules()

@@ -94,6 +94,8 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
 
         exit_code, stdout, stderr = run_module_entrypoint("--version")
 
+        self.assertEqual(__version__, "0.0.4")
+
         self.assertEqual(exit_code, 0)
         self.assertEqual(stdout.strip(), f"cloe {__version__}")
         self.assertEqual(stderr, "")

@@ -1,13 +1,13 @@
 ---
 name: repomap-mcp-smoke-test
-description: Use when verifying that an MCP-capable coding agent can connect to a local read-only RepoMap MCP server and query a preloaded RepoMap graph without mutating storage or running discovery through MCP.
+description: Use when verifying that an MCP-capable coding agent can connect to a local read-only Common Lore Index MCP server and query a preloaded Common Lore Index graph without mutating storage or running discovery through MCP.
 ---
 
-# RepoMap MCP Smoke Test
+# Common Lore Index MCP Smoke Test
 
 ## Overview
 
-Verify MCP integration after adding or changing a RepoMap MCP server
+Verify MCP integration after adding or changing a Common Lore Index MCP server
 configuration. The smoke test proves that an agent can call the read-only
 MCP tools against a graph that was loaded outside MCP. This skill is the
 sole owner of the smoke checklist; configuration shape belongs to
@@ -23,7 +23,7 @@ Prepare storage outside MCP:
 
 1. Start a disposable Postgres cluster or choose a non-production test
    database (or use an existing configured local runtime graph).
-2. Apply RepoMap migrations.
+2. Apply Common Lore Index migrations.
 3. Load a graph outside MCP: either refresh a configured graph through local
    ops, or run `cloe discover <repo> --jsonl` plus
    `cloe storage load-files <observations.jsonl>` for a disposable
@@ -37,9 +37,9 @@ The MCP server itself must remain read-only.
 ## Suggested Agent Prompt
 
 ```text
-You are performing a RepoMap MCP smoke test.
-Do not edit files. Do not run shell commands. Do not use non-RepoMap tools.
-Use only the RepoMap MCP tools.
+You are performing a Common Lore Index MCP smoke test.
+Do not edit files. Do not run shell commands. Do not use non-Common Lore Index tools.
+Use only the Common Lore Index MCP tools.
 Use project="<name>" (or graph_id="<graph-id>" for graph-registry tools).
 
 Call these tools and summarize whether each call succeeded:
@@ -126,7 +126,7 @@ mechanics only, never native acceptance.
 ## Approval And Session Gotchas
 
 MCP-capable agents may require tool approval for local MCP calls. Prefer a
-server-scoped approval/trust setting for the read-only RepoMap MCP server
+server-scoped approval/trust setting for the read-only Common Lore Index MCP server
 over global approval or sandbox bypasses.
 
 If tools do not appear after configuration changes, restart the agent
@@ -144,4 +144,4 @@ Record:
 - concrete counts or graph facts returned;
 - exact failure text, if any;
 - whether each failure belongs to MCP configuration, agent approval/session
-  behavior, storage connection, or RepoMap query behavior.
+  behavior, storage connection, or Common Lore Index query behavior.

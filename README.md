@@ -21,7 +21,7 @@ and hosted qualification remain separate gates.
 ## Project Identity
 
 - Official name: Common Lore Index (CLOE)
-- Git repository: `repo-map`
+- Git repository: [`common-lore-index`](https://github.com/Knowledge-Forge-AI/common-lore-index)
 - Python distribution: `common-lore-index`
 - Python import package: `common_lore_index`
 - CLI: `cloe` (also `common-lore-index`; transitional `repomap-kg` through v0.1.x)
@@ -44,7 +44,7 @@ See [installed upgrade compatibility](docs/ops/cloe-installed-upgrade-compatibil
   container, region, and physical database location.
 - Keep project-specific conventions in profiles rather than hardcoding them.
 - Make the casual local experience folder-backed: configured databases should
-  track the current state of their folder tree or repository through RepoMap
+  track the current state of their folder tree or repository through Common Lore Index
   local ops or an authorized agent, without requiring the user to manually
   stitch together discovery JSONL and storage-load commands.
 
@@ -52,7 +52,7 @@ See [installed upgrade compatibility](docs/ops/cloe-installed-upgrade-compatibil
 
 Contribution standards live under [docs/contrib](docs/contrib/README.md).
 They cover coding style, testing, dependency review, PR/review expectations,
-and contributor AI-agent skills. Operator/runtime RepoMap skills live under
+and contributor AI-agent skills. Operator/runtime Common Lore Index skills live under
 [docs/ops/skills](docs/ops/skills/README.md); the `.agents/skills` and
 `.claude/skills` catalogs are active symlink projections of both canonical
 skill roots for agent discovery. Projection bodies are never canonical.
@@ -68,7 +68,7 @@ forward exit rules.
 
 ## Current Status
 
-RepoMap has a working deterministic raw-observation pipeline, legacy
+Common Lore Index has a working deterministic raw-observation pipeline, legacy
 observation-derived Postgres readback, and canonical graph storage/readback.
 Discovery emits file, entrypoint, shell command, sourced-file, environment,
 host-mutation, Python AST, and static Nix observations as JSONL. Legacy storage
@@ -201,14 +201,14 @@ hooks, assertions, mocks, and stubs as non-executed test intent.
 ## Requirements
 
 - Python 3.12 or newer for local development.
-- Docker-compatible container runtime for the local RepoMap runtime and
+- Docker-compatible container runtime for the local Common Lore Index runtime and
   storage-backed integration tests. Docker is the currently tested default;
   Podman compatibility is intended where the command surface matches.
 - Postgres client tools are not required on the host for the local runtime
-  lifecycle commands; RepoMap prefers container exec paths for runtime database
+  lifecycle commands; Common Lore Index prefers container exec paths for runtime database
   administration.
 - Nix is optional. It is useful for this repository's local development setup,
-  but RepoMap also runs directly from a Python checkout.
+  but Common Lore Index also runs directly from a Python checkout.
 
 ## Installing `repomap-kg`
 
@@ -236,9 +236,9 @@ driver. PostgreSQL Server Engine work needs the `postgres` extra, which pins
 Its C extension is compiled from source and dynamically linked to the host's
 own libpq, so the host needs a C compiler, the libpq development headers and
 `pg_config`, with headers and runtime libpq from the same package version.
-RepoMap installs none of these. Every Psycopg input is hash-bound: install the
+Common Lore Index installs none of these. Every Psycopg input is hash-bound: install the
 locked build tools, then build `psycopg-c` from its hash-pinned source archive
-without isolation, then install RepoMap itself without resolving again:
+without isolation, then install Common Lore Index itself without resolving again:
 
 ```sh
 python -m pip install --require-hashes --no-deps --only-binary :all: --requirement tools/ci/psycopg_build.lock
@@ -306,7 +306,7 @@ configuration, inspect the partial home, then resume with
 `local setup --repo-map-home ~/.cloe --config-format cloe`. The explicit format
 preserves CLOE filenames during recovery.
 
-The config home is a folder, not one giant config file. RepoMap loads TOML files
+The config home is a folder, not one giant config file. Common Lore Index loads TOML files
 matching:
 
 - `*.rp.toml` for project/shareable configuration.
@@ -322,10 +322,10 @@ status artifacts, or private graph data.
 
 ## Local Runtime
 
-RepoMap's intended local runtime is an isolated container cluster:
+Common Lore Index's intended local runtime is an isolated container cluster:
 
-- a RepoMap server/MCP container;
-- a RepoMap-owned Postgres container;
+- a Common Lore Index server/MCP container;
+- a Common Lore Index-owned Postgres container;
 - `REPOMAP_HOME` mounted for config and runtime state;
 - localhost-only, configurable, non-standard ports.
 
@@ -360,7 +360,7 @@ for clients that launch the process directly.
 Direct Postgres host-port exposure is disabled by default. The server container
 connects to Postgres over the internal container network. DBeaver/manual DB
 access is a local dev/debug toggle only; when enabled, it binds localhost and
-uses the configured non-standard host port. RepoMap status output redacts the
+uses the configured non-standard host port. Common Lore Index status output redacts the
 password and points to the local runtime env file instead of printing secrets.
 
 To check container liveness and the local server health endpoint:
@@ -369,7 +369,7 @@ To check container liveness and the local server health endpoint:
 repomap-kg local status --repo-map-home ~/.repo-map --check-containers --json
 ```
 
-For local source builds of the server image, run from the RepoMap checkout or
+For local source builds of the server image, run from the Common Lore Index checkout or
 set `REPOMAP_SOURCE_ROOT=/path/to/repo-map` so generated Compose files build the
 image from the source tree rather than from an installed package location.
 
@@ -378,9 +378,9 @@ image from the source tree rather than from an installed package location.
 Direct Postgres host-port exposure remains disabled by default. When host-side
 ops commands need database readback or refresh loading, they first try the
 normal `psql` path. If that cannot reach a configured internal container host
-such as `postgres`, RepoMap can use the running RepoMap-owned Postgres container
+such as `postgres`, Common Lore Index can use the running Common Lore Index-owned Postgres container
 through `docker exec` or the configured container runtime. The container must be
-owned by the same `REPOMAP_HOME` runtime metadata and labels; RepoMap does not
+owned by the same `REPOMAP_HOME` runtime metadata and labels; Common Lore Index does not
 silently use unrelated Postgres containers.
 
 This means these host-side commands work with the local runtime up and direct DB
@@ -394,7 +394,7 @@ repomap-kg ops refresh-graph --repo-map-home "$REPOMAP_HOME" --graph repo-map --
 ```
 
 `--psql-command` remains available as an explicit override for development and
-debugging. Prefer the automatic RepoMap-owned container path over enabling direct
+debugging. Prefer the automatic Common Lore Index-owned container path over enabling direct
 DB host-port exposure. If neither host `psql` nor the owned container path is
 available, the command reports that direct DB access is disabled, the host
 cannot reach the internal Postgres name, and the local runtime should be started
@@ -403,7 +403,7 @@ or the local debug toggle enabled deliberately. Never expose Postgres remotely.
 ## Database Lifecycle
 
 Database lifecycle commands are local administrative CLI operations scoped to
-RepoMap-owned runtime containers. They do not use a host-installed Postgres
+Common Lore Index-owned runtime containers. They do not use a host-installed Postgres
 server and do not require direct DB host-port exposure.
 
 ```sh
@@ -416,13 +416,13 @@ repomap-kg local db init --repo-map-home ~/.repo-map --database repomap --from-d
 repomap-kg local db drop --repo-map-home ~/.repo-map --database repomap --backup-first --yes
 ```
 
-`drop` is backup-first only: RepoMap must create and verify a dump, manifest,
+`drop` is backup-first only: Common Lore Index must create and verify a dump, manifest,
 checksums, and restore note before dropping a database. There is no unbacked
 wipe/reset/clear/truncate command.
 
 ## Server-Memory Bridge
 
-RepoMap can read the lightweight MCP `server-memory` JSONL card catalog through
+Common Lore Index can read the lightweight MCP `server-memory` JSONL card catalog through
 an explicit read-only bridge configured by `[server_memory]`. The bridge is for
 bounded summaries/search and does not mutate server-memory, rewrite JSONL, or
 replace server-memory as the card catalog.
@@ -435,7 +435,7 @@ mode = "read_only"
 ```
 
 Use server-memory for compact pointers to policies, docs, skills, and operating
-notes. Use RepoMap graph evidence for generated source/config/readback facts.
+notes. Use Common Lore Index graph evidence for generated source/config/readback facts.
 
 ## Graph Configuration
 
@@ -444,7 +444,7 @@ Graphs are configured with `[[graphs]]` entries under `REPOMAP_HOME`:
 ```toml
 [[graphs]]
 id = "repo-map"
-name = "RepoMap"
+name = "Common Lore Index"
 root_path = "/path/to/repo-map"
 repository_name = "repo-map"
 database = "repomap_repo_map"
@@ -458,7 +458,7 @@ exclude_paths = [".git", ".serena", "__pycache__", "node_modules"]
 
 `database` is optional. If it is absent, graph-scoped operations fall back to
 `[postgres].database`. Use graph-specific database names when one Postgres
-container stores separate RepoMap databases for separate configured graphs.
+container stores separate Common Lore Index databases for separate configured graphs.
 
 `exclude_paths` are relative to the graph root. They are applied before refresh
 reads files and are combined with default discovery excludes.
@@ -516,9 +516,9 @@ and [Static Nix Cross-Source Resolution](docs/specs/nix-cross-source-resolution.
 
 ## Folder-Backed Graph Tracking
 
-RepoMap's intended casual-user default is a database backed by a configured
+Common Lore Index's intended casual-user default is a database backed by a configured
 folder tree or repository. Once a graph is configured under `REPOMAP_HOME`,
-RepoMap local ops or an authorized agent should keep the graph database aligned
+Common Lore Index local ops or an authorized agent should keep the graph database aligned
 with the current source state. The user should not need to manually redirect
 `discover` output into a JSONL file and then hand-load that file into storage
 for routine operation.
@@ -543,7 +543,7 @@ Use broader refresh commands only when the configured graph set, excludes, and
 baselines have been reviewed for that maintenance run.
 
 If a configured graph database must be recreated or dropped to restore
-alignment with its source root, use RepoMap's backup-first database lifecycle
+alignment with its source root, use Common Lore Index's backup-first database lifecycle
 commands. Backup dumps, manifests, checksums, and restore notes belong under
 `REPOMAP_HOME/backups`. Do not use unbacked wipe/reset/drop/clear/truncate
 operations, and do not operate on host-installed or unrelated Postgres.
@@ -580,7 +580,7 @@ repomap-kg ops refresh-status --repo-map-home "$REPOMAP_HOME" --graph <graph-id>
 ```
 
 When direct DB host-port exposure is disabled, host-side refreshes automatically
-fall back to the RepoMap-owned Postgres container if the local runtime is up and
+fall back to the Common Lore Index-owned Postgres container if the local runtime is up and
 the normal host `psql` path cannot reach the internal container hostname. Do not
 enable direct DB exposure just to refresh a graph.
 
@@ -759,8 +759,8 @@ The staging composition runs substantial smoke first and integration second,
 fail-fast; it never reruns unit and has no combined coverage owner.
 
 The testing policy and staged pytest migration plan are documented in
-[RepoMap Test Runner Policy](docs/testing/test-runner-policy.md) and
-[RepoMap Testing Standards](docs/contrib/testing-standards.md). Development
+[Common Lore Index Test Runner Policy](docs/testing/test-runner-policy.md) and
+[Common Lore Index Testing Standards](docs/contrib/testing-standards.md). Development
 tasks run proportional local verification (affected unit/integration tests,
 compile/static checks, and diff checks). Routine exhaustive correctness
 verification is owned by hosted CI (`repomap-staging-gate`), while the local
@@ -848,7 +848,7 @@ Postgres harness and shared integration state are proven safe under xdist.
 
 ## License
 
-Future RepoMap releases are licensed under the GNU Affero General Public
+Future Common Lore Index releases are licensed under the GNU Affero General Public
 License v3.0 or later. See [LICENSE](LICENSE).
 
 Commercial licenses are available for proprietary terms, including

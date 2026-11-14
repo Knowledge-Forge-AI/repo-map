@@ -22,7 +22,7 @@ import subprocess
 import sys
 from typing import Any, Mapping, Sequence
 
-DEFAULT_TARGET_VERSION = "0.0.3"
+DEFAULT_TARGET_VERSION = "0.0.4"
 WITHHELD_DIRECTORIES = ("docs/status", "docs/superpowers")
 
 
@@ -342,7 +342,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--repository",
         default=os.environ.get("GITHUB_REPOSITORY", ""),
-        help="expected repository name (e.g. Knowledge-Forge-AI/repo-map)",
+        help="expected repository name (e.g. Knowledge-Forge-AI/common-lore-index)",
     )
     parser.add_argument("--expected-commit", default=os.environ.get("CANDIDATE_COMMIT"))
     parser.add_argument("--expected-tree", default=os.environ.get("CANDIDATE_TREE"))

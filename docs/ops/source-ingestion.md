@@ -1,6 +1,6 @@
 # Source Ingestion Operations
 
-This reference owns the detailed current-state procedure for RepoMap's
+This reference owns the detailed current-state procedure for Common Lore Index's
 explicit source ingestion families. The operator entry point and routing live
 in the `repomap-cli-workflow` skill under
 [docs/ops/skills](skills/README.md); this document carries the per-family
@@ -15,7 +15,7 @@ Every ingestion family:
 - is a versioned acquisition-only command: results report
   `graph_mutated=false` and `freshness_updated=false`, and no repository or
   PostgreSQL mutation selectors exist on the command;
-- writes RepoMap-owned artifacts beneath the required `--root-path`;
+- writes Common Lore Index-owned artifacts beneath the required `--root-path`;
 - redacts secret-prone content in retained artifacts and summaries;
 - exits `0` on success and `1` on handled policy or acquisition failure;
 - supports `--json` for a machine-readable acquisition summary.
@@ -56,7 +56,7 @@ For exact cross-source Nix module relations, the target flake must directly
 export the referenced `nixosModules` attribute to a literal selected path.
 Filename convention and a bare input reference are never enough. Dynamic,
 conditional, inherited, merged, interpolated, indirect, and helper-generated
-output shapes re-enter only through a separately accepted static rule; RepoMap
+output shapes re-enter only through a separately accepted static rule; Common Lore Index
 does not evaluate Nix.
 
 After an authorized refresh, use `repomap-kg ops graph-files --graph

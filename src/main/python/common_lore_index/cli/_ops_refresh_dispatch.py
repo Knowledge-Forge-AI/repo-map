@@ -1,4 +1,4 @@
-"""Ops config, graph, and refresh command dispatch for the RepoMap CLI."""
+"""Ops config, graph, and refresh command dispatch for the Common Lore Index CLI."""
 
 from __future__ import annotations
 

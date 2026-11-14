@@ -1,4 +1,4 @@
-"""Observation and server command dispatch for the RepoMap CLI."""
+"""Observation and server command dispatch for the Common Lore Index CLI."""
 
 from __future__ import annotations
 

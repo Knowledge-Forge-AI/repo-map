@@ -1,7 +1,7 @@
-# RepoMap Operator Skills
+# Common Lore Index Operator Skills
 
 This directory holds public AI-agent skills for configuring, operating,
-using, or maintaining RepoMap MCP and local folder-backed graph workflows.
+using, or maintaining Common Lore Index MCP and local folder-backed graph workflows.
 
 Current operator skills:
 

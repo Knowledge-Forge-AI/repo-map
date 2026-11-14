@@ -1,4 +1,4 @@
-"""Storage command parser construction for the RepoMap CLI."""
+"""Storage command parser construction for the Common Lore Index CLI."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ def add_storage_commands(
 ) -> None:
     storage = subparsers.add_parser(
         "storage",
-        help="work with RepoMap storage backends",
+        help="work with Common Lore Index storage backends",
     )
     storage_subcommands = storage.add_subparsers(dest="storage_command")
     load_files = storage_subcommands.add_parser(
@@ -53,7 +53,7 @@ def add_storage_commands(
     )
     storage_explain_canonical_edge.add_argument(
         "--repo-map-home",
-        help="setup-owned RepoMap home for local read/status authority",
+        help="setup-owned Common Lore Index home for local read/status authority",
     )
     storage_explain_canonical_edge.add_argument("--source-key", required=True)
     storage_explain_canonical_edge.add_argument("--kind", required=True)
@@ -213,7 +213,7 @@ def add_storage_commands(
     )
     storage_edges.add_argument(
         "--repo-map-home",
-        help="setup-owned RepoMap home for local read/status authority",
+        help="setup-owned Common Lore Index home for local read/status authority",
     )
     storage_edges.add_argument("--kind", help="include only edges with this kind")
     storage_edges.add_argument(

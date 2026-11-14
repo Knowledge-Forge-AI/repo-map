@@ -389,7 +389,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             home = Path(tmpdir) / "repo-map-home"
             result = setup_local_runtime(home)
             table = format_local_runtime_table(result)
-        for token in ("RepoMap local runtime setup", "direct_db=disabled", "Direct DB access disabled",
+        for token in ("Common Lore Index local runtime setup", "direct_db=disabled", "Direct DB access disabled",
                       "graph_roots_read=false", "destructive_db_actions=false"):
             self.assertIn(token, table)
         for token in ("password=[REDACTED: see runtime/.env]", "POSTGRES_PASSWORD="):

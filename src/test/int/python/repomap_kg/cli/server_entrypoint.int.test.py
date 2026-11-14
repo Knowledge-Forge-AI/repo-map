@@ -47,7 +47,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
         self.assertEqual(result.stderr, "")
         payload = json.loads(result.stdout)
         self.assertEqual(payload["id"], 1)
-        self.assertEqual(payload["result"]["serverInfo"]["name"], "repomap-kg")
+        self.assertEqual(payload["result"]["serverInfo"]["name"], "common-lore-index")
 
     def test_server_serve_http_health_and_status_are_bounded_and_private(self):
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -1,6 +1,6 @@
-# RepoMap Go Standards
+# Common Lore Index Go Standards
 
-These are the durable Go engineering standards for RepoMap. They apply to new
+These are the durable Go engineering standards for Common Lore Index. They apply to new
 or touched Go code in approved Go components; they are not permission for
 broad rewrites. Existing project style, compatibility contracts, tests,
 public APIs, documented behavior, and explicit phase scope take precedence.
@@ -96,14 +96,14 @@ Package paths must not repeat the repository or executable name
 unnecessarily. Prefer `internal/request` and `internal/result` over names
 like `internal/repomaprunnerrequest`.
 
-## RepoMap Go Component Boundaries
+## Common Lore Index Go Component Boundaries
 
-Go code in RepoMap must represent an explicitly approved component boundary.
+Go code in Common Lore Index must represent an explicitly approved component boundary.
 Do not mirror the complete Python package hierarchy merely to create a
 parallel Go implementation.
 
 Each Go component must have a documented relationship to the existing Python
-implementation and public RepoMap contracts. Before introducing a new Go
+implementation and public Common Lore Index contracts. Before introducing a new Go
 package, determine whether it is:
 
 - a standalone executable;
@@ -130,7 +130,7 @@ Do not depend on:
 - undocumented environment variables;
 - shared mutable files without an ownership protocol.
 
-Go implementations must preserve RepoMap's existing guarantees for:
+Go implementations must preserve Common Lore Index's existing guarantees for:
 
 - deterministic output;
 - static non-executing extraction;
@@ -531,12 +531,12 @@ only; these Go limits are review standards for Go code.)
   follow-up identifier, and do not leave placeholder implementations
   presented as completed behavior.
 
-## Role Of Go In RepoMap
+## Role Of Go In Common Lore Index
 
 - Do not introduce Go merely to replace working Python code. Use Go only for
   an approved component with a clear boundary and demonstrated benefit.
-- Preserve language-neutral protocols between RepoMap and external
-  controllers, and do not make RepoMap's public data model depend on
+- Preserve language-neutral protocols between Common Lore Index and external
+  controllers, and do not make Common Lore Index's public data model depend on
   Go-specific serialization behavior.
 
 ## Extraction And Graph Determinism

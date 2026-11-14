@@ -1,4 +1,4 @@
-"""Local-runtime command parser construction for the RepoMap CLI."""
+"""Local-runtime command parser construction for the Common Lore Index CLI."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def add_local_commands(
 ) -> None:
     local = subparsers.add_parser(
         "local",
-        help="manage the local containerized RepoMap runtime",
+        help="manage the local containerized Common Lore Index runtime",
     )
     local_subcommands = local.add_subparsers(dest="local_command")
     local_setup = local_subcommands.add_parser(
@@ -39,7 +39,7 @@ def add_local_commands(
     )
     local_up = local_subcommands.add_parser(
         "up",
-        help="start the local containerized RepoMap runtime",
+        help="start the local containerized Common Lore Index runtime",
     )
     add_local_runtime_arguments(local_up)
     local_up.add_argument(
@@ -54,7 +54,7 @@ def add_local_commands(
     )
     local_down = local_subcommands.add_parser(
         "down",
-        help="stop RepoMap-owned local runtime containers",
+        help="stop Common Lore Index-owned local runtime containers",
     )
     add_local_runtime_arguments(local_down)
     local_down.add_argument(
@@ -89,7 +89,7 @@ def add_local_commands(
     local_db_subcommands = local_db.add_subparsers(dest="local_db_command")
     local_db_dump = local_db_subcommands.add_parser(
         "dump",
-        help="dump one RepoMap-owned runtime database",
+        help="dump one Common Lore Index-owned runtime database",
     )
     add_local_runtime_arguments(local_db_dump)
     local_db_dump.add_argument("--database", required=True)
@@ -106,7 +106,7 @@ def add_local_commands(
     )
     local_db_dump_all = local_db_subcommands.add_parser(
         "dump-all",
-        help="dump configured RepoMap-owned runtime databases",
+        help="dump configured Common Lore Index-owned runtime databases",
     )
     add_local_runtime_arguments(local_db_dump_all)
     local_db_dump_all.add_argument("--reason")
@@ -170,7 +170,7 @@ def add_local_commands(
     )
     local_db_init = local_db_subcommands.add_parser(
         "init",
-        help="initialize a new RepoMap-owned runtime database",
+        help="initialize a new Common Lore Index-owned runtime database",
     )
     add_local_runtime_arguments(local_db_init)
     local_db_init.add_argument("--database", required=True)
@@ -178,7 +178,7 @@ def add_local_commands(
     init_source.add_argument(
         "--from-source",
         action="store_true",
-        help="initialize a new database from RepoMap source migrations",
+        help="initialize a new database from Common Lore Index source migrations",
     )
     init_source.add_argument(
         "--from-dump",
@@ -223,7 +223,7 @@ def add_local_commands(
     )
     local_db_drop = local_db_subcommands.add_parser(
         "drop",
-        help="drop one RepoMap-owned runtime database after a verified backup",
+        help="drop one Common Lore Index-owned runtime database after a verified backup",
     )
     add_local_runtime_arguments(local_db_drop)
     local_db_drop.add_argument("--database", required=True)

@@ -8,7 +8,7 @@ from typing import Any
 def format_backup_result_table(result: Any) -> str:
     payload = result.to_jsonable()
     lines = [
-        f"RepoMap local DB {payload['command']}: result={payload['result']}",
+        f"Common Lore Index local DB {payload['command']}: result={payload['result']}",
         f"backup_id={payload['backup_id']}",
         f"database={payload['database']} databases={','.join(payload['databases'])}",
         (
@@ -33,7 +33,7 @@ def format_backup_result_table(result: Any) -> str:
 def format_backup_listing_table(result: Any) -> str:
     payload = result.to_jsonable()
     lines = [
-        f"RepoMap local DB backups: count={payload['backup_count']}",
+        f"Common Lore Index local DB backups: count={payload['backup_count']}",
         "backup_id | kind | database | timestamp | total_bytes | restore_supported",
     ]
     for backup in payload["backups"]:
@@ -61,7 +61,7 @@ def format_backup_info_table(result: Any) -> str:
     manifest = payload["manifest"]
     return "\n".join(
         [
-            "RepoMap local DB backup info",
+            "Common Lore Index local DB backup info",
             f"backup_id={manifest.get('backup_id')}",
             f"kind={manifest.get('backup_kind')}",
             f"database={manifest.get('database')}",
@@ -77,7 +77,7 @@ def format_backup_inspect_table(result: Any) -> str:
     present = sorted(table for table, included in expected.items() if included)
     missing = sorted(table for table, included in expected.items() if not included)
     lines = [
-        "RepoMap local DB backup inspect",
+        "Common Lore Index local DB backup inspect",
         f"backup_id={payload['backup_id']}",
         f"kind={payload['backup_kind']}",
         f"database={payload['database']}",
@@ -99,7 +99,7 @@ def format_backup_inspect_table(result: Any) -> str:
 def format_init_result_table(result: Any) -> str:
     payload = result.to_jsonable()
     lines = [
-        f"RepoMap local DB init: result={payload['result']}",
+        f"Common Lore Index local DB init: result={payload['result']}",
         f"database={payload['database']}",
         f"source_mode={payload['source_mode']}",
         f"target_existed={str(payload['target_existed']).lower()}",
@@ -129,7 +129,7 @@ def format_init_result_table(result: Any) -> str:
 def format_drop_result_table(result: Any) -> str:
     payload = result.to_jsonable()
     lines = [
-        f"RepoMap local DB drop: result={payload['result']}",
+        f"Common Lore Index local DB drop: result={payload['result']}",
         f"database={payload['database']}",
         f"backup_first={str(payload['backup_first']).lower()}",
         f"confirmation_received={str(payload['confirmation_received']).lower()}",

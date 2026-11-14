@@ -114,7 +114,7 @@ def assert_mcp_wire(stdout: str) -> None:
     responses = mcp_responses(stdout)
     assert sorted(responses) == [1, 2]
     initialized = responses[1]["result"]
-    assert isinstance(initialized, dict) and initialized["serverInfo"]["name"] == "repomap-kg"
+    assert isinstance(initialized, dict) and initialized["serverInfo"] == {"name": "common-lore-index", "version": __version__}
     listed = responses[2]["result"]
     assert isinstance(listed, dict)
     assert [tool["name"] for tool in listed["tools"]] == [tool["name"] for tool in tool_definitions()]
@@ -126,7 +126,7 @@ def test_clean_process_help_is_explicitly_branded_with_stderr_only_notice(tmp_pa
     env = disposable_environment(tmp_path / "user home")
     result = launch(argv, env, "--help")
     assert result.returncode == 0, result.stderr
-    assert result.stdout.startswith(f"usage: {prog} ")
+    assert result.stdout.startswith(f"usage: {prog} ") and "RepoMap" not in result.stdout
     assert result.stderr == notice
     assert "deprecated" not in result.stdout and snapshot(tmp_path / "user home") == {}
 
@@ -194,14 +194,14 @@ def record(argv=None, *, prog):
     return 0
 cli.main=record
 os.environ.clear()
-os.environ.update(LANG='C.UTF-8', DATABASE_PASSWORD='synthetic-sentinel')
+os.environ.update(LANG='C.UTF-8', DATABASE_PASSWORD='xxxxxxxxxxxxxxxx')
 sys.argv=['repomap_kg','ops','coordinator-serve','--repo-map-home','/placeholder/home','--service-package-environment','--json']
 runpy.run_module('repomap_kg',run_name='__main__')
 """
     result = launch([sys.executable, "-c", code], env)
     assert result.returncode == 0 and result.stderr == LEGACY_LINE
     assert json.loads(result.stdout) == {"keys": ["LANG"], "argv": None, "prog": "repomap-kg"}
-    assert "synthetic-sentinel" not in result.stdout + result.stderr
+    assert "xxxxxxxxxxxxxxxx" not in result.stdout + result.stderr
 
 
 def test_mcp_serve_through_canonical_and_legacy_commands_is_read_only_and_identical(tmp_path: Path) -> None:

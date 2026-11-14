@@ -36,7 +36,7 @@ def dispatch_release_cluster_command(
         print(json.dumps(payload, sort_keys=True))
     else:
         print(
-            "RepoMap release cluster: "
+            "Common Lore Index release cluster: "
             f"result={payload['result']} "
             f"graphs={payload['graph_database_count']}",
             file=sys.stdout,

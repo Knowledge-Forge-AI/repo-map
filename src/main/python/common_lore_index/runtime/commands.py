@@ -153,7 +153,7 @@ def _validate_runtime_home_hash(runtime_home_hash: str) -> None:
 def format_local_runtime_table(result: LocalRuntimeResult) -> str:
     payload = result.to_jsonable()
     lines = [
-        f"RepoMap local runtime {payload['command']}",
+        f"Common Lore Index local runtime {payload['command']}",
         f"result: {payload['result']}",
         (
             "runtime: "

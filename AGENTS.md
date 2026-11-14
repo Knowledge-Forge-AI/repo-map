@@ -1,11 +1,11 @@
-# RepoMap Agent Instructions
+# Common Lore Index Agent Instructions
 
 These instructions apply to AI coding-agent sessions launched from the root
-of the RepoMap repository. This file is the shared, agent-neutral project
+of the Common Lore Index repository. This file is the shared, agent-neutral project
 entrypoint; agent-specific adapters such as `CLAUDE.md` supplement it and
 must not weaken it.
 
-RepoMap is a deterministic knowledge graph system for polyglot software
+Common Lore Index is a deterministic knowledge graph system for polyglot software
 repositories. The implementation includes SQLite Local and PostgreSQL with multi-source
 composition. ADR 0071 defines one product: SQLite Local, PostgreSQL Server Engine,
 and managed Cloud. SQLite Local and host-native MCP are manager-accepted for
@@ -37,9 +37,9 @@ These boundaries hold for every task:
 - Redact first: fixtures, docs, tests, and outputs must be public-safe.
 - Never put secrets, private identities, private paths, or raw private
   runtime data in public output or commits.
-- The RepoMap MCP surface remains read-only.
+- The Common Lore Index MCP surface remains read-only.
 - Runtime/database destructive work is backup-first and scoped to
-  RepoMap-owned resources.
+  Common Lore Index-owned resources.
 - The current reference runtime is containerized and localhost-bound; do not
   assume host Postgres, host IPC, or a developer's live database.
 - Public behavior, schema, CLI/MCP contract, or graph vocabulary changes

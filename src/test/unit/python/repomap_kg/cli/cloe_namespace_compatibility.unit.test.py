@@ -3,6 +3,8 @@ from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
 import sys
+from pathlib import Path
+import tomllib
 from unittest.mock import patch
 
 import pytest
@@ -52,7 +54,7 @@ def test_brand_is_explicit_and_never_inferred_from_argv0(argv0):
     with patch.object(sys, "argv", [argv0, "--help"]):
         for entry, prog in BRANDS:
             code, stdout, stderr = capture(entry, "--help")
-            assert code == 0 and stdout.startswith(f"usage: {prog} ")
+            assert code == 0 and stdout.startswith(f"usage: {prog} ") and "RepoMap" not in stdout
             assert stderr == (LEGACY_LINE if prog == "repomap-kg" else "")
     assert build_parser().prog == "cloe"
 
@@ -99,3 +101,17 @@ def test_root_identity_reexports_do_not_duplicate_the_canonical_module():
     assert repomap_kg.IMPORT_PACKAGE is common_lore_index.IMPORT_PACKAGE
     assert repomap_kg.PREFERRED_CLI is common_lore_index.PREFERRED_CLI
     assert repomap_kg.__version__ is common_lore_index.__version__
+
+
+def test_preview004_identity_matches_packaging_and_root_lock_entry() -> None:
+    root = Path(__file__).resolve().parents[6]
+    project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
+    lock = tomllib.loads((root / "uv.lock").read_text())
+    editable = [row for row in lock["package"] if row.get("source") == {"editable": "."}]
+    assert common_lore_index.__version__ == "0.0.4"
+    assert project["name"] == common_lore_index.DISTRIBUTION_NAME == "common-lore-index"
+    assert project["version"] == common_lore_index.__version__
+    assert [(row["name"], row["version"]) for row in editable] == [(project["name"], project["version"])]
+    assert PROJECT_IDENTITY.name == "Common Lore Index"
+    assert PROJECT_IDENTITY.cli == "cloe"
+    assert PROJECT_IDENTITY.license == "AGPL-3.0-or-later"

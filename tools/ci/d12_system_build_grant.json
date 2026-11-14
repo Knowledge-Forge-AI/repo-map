@@ -1,28 +1,28 @@
 {
-  "approval_sha256": "08f7f70749615b4b66478b436ce6d11f2b4546d0fcb4f258dcf86ab1298a68eb",
+  "approval_sha256": "14ac72844b6019618c27de531ad70be525053ed75151c7f7fe7749a707081f55",
   "base": "5ad00d162ad8a04430874275246a53227578c533",
   "base_ref": "main",
-  "before": "9081d5e0c56635ce05086e3758c7622664e37bf4",
+  "before": "4de09d0accf75c2ed9c89c10c47f56c3ed66ac65",
   "d12_context": {
     "context_file_count": 889,
-    "dockerfile_sha256": "03157e09e1b68f731c7869578fdc2f685198817b70e4544dcbdd63e840a350ce",
-    "recipe_sha256": "fad64b4f87f61462c3213f91a84299379aade3bc153818573545800e95a7ad21",
-    "source_sha256": "0f18f30f4052c6d9c4310b7b9fb1ea655847efb1043601e640c3efaf57c40c9d"
+    "dockerfile_sha256": "94787a9f46a8c8ca407954bfad1a19ced79fe104c4caa4d47113d3af5fc105a8",
+    "recipe_sha256": "8de1f96f2539f76b897fd7db4ac4646573a36e5ee98d8f0c8ee6c0e82c25f228",
+    "source_sha256": "15a7cc0e4be687e4029b0b8e1a2a0e60fd63438a02b5bd0111880a9e129fe049"
   },
   "event_action": "synchronize",
   "head_ref": "staging",
-  "ledger_before_sha256": "5f07204f209050c0961d47576c51e0ea8e5bf99b2ff69874117884c705a45135",
+  "ledger_before_sha256": "fd16997111e9ee12979c9ddafca289dc6d5ddc86ec299f6b63c393fc2dce67d4",
   "maximum_per_platform": 53,
   "maximum_total": 53,
-  "nonce": "dcbf41dfa43442600d7eb9a3f9c074db",
+  "nonce": "f3d84d991ae06b04f7237d38fc54ca72",
   "owner": "main-system-gate",
   "platform": "linux/amd64",
   "pull_request": 23,
-  "repository": "Knowledge-Forge-AI/repo-map",
-  "reservation_sha256": "bb9930be0172ea711c540f4d0d0d1ce2373ec4db73540f367437193bb60de591",
+  "repository": "Knowledge-Forge-AI/common-lore-index",
+  "reservation_sha256": "5b203f117b3f618fb373ba4d0a92b2aba6d673061c5396dc3320232f39a932a9",
   "schema": "repomap-d12-system-build-grant-v1",
   "sdk_recipe_sha256": "24ddf31d8890922c012559d5cab4b1dffe4b41e5b19e9b3438555aabe22d2862",
   "workflow_attempt": 1,
-  "workflow_ordinal": 144,
+  "workflow_ordinal": 145,
   "workflow_path": ".github/workflows/repomap-release-qualification.yml"
 }
